@@ -1,24 +1,125 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  ScrollView,
+  NativeScrollEvent,
+} from 'react-native';
+import React, {useRef, useCallback, useState} from 'react';
 import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
+import TopAppBar from '../components/TopAppBar';
+import {AppColors} from '../utils/AppColors';
+import {HEIGHT, WIDTH} from '../utils/AppDimension';
+import {tabData} from '../data/smallData';
+import Tab from '../components/Tab';
+import Animated, {
+  useAnimatedScrollHandler,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import ChatComp from '../components/ChatComp';
+import {PositionButton, SizedBox} from '../components/Reuseable';
+import {AntDesign, MaterialIcons} from '../utils/IconExport';
+
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Home = () => {
   const navigation = useNavigation<any>();
+  const translateX = useSharedValue(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const scrollRef = useRef<Animated.ScrollView>(null);
 
-  const logout = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        navigation.navigate('Register');
-        console.log('User signed out!');
-      });
-  };
+  // onScrollEvent function
+  const onScrollEvent = useAnimatedScrollHandler({
+    onScroll: (event: NativeScrollEvent) => {
+      // console.log(event.contentOffset.x);
+      translateX.value = event.contentOffset.x;
+    },
+  });
+
+  // change tab on click
+  const changeTab = useCallback((text: string) => {
+    if (text == 'Chat') {
+      scrollRef?.current?.scrollTo({x: 0});
+    } else {
+      scrollRef?.current?.scrollTo({x: WIDTH});
+    }
+  }, []);
+
+  // get Active Tab value
+  const activeTab = useDerivedValue(() => {
+    return Math.round(translateX.value / WIDTH);
+  });
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={logout}>
-        <Text>Logout</Text>
-      </TouchableOpacity>
+      <StatusBar
+        backgroundColor={AppColors.GREY_BLACK}
+        barStyle={'light-content'}
+      />
+      {/* topappBar */}
+      <TopAppBar text="Chatapp" back={false} />
+
+      {/* tabbar */}
+      <View style={styles.tabBarContainer}>
+        {tabData.map((item, index) => (
+          <Tab
+            key={index}
+            item={item}
+            index={index}
+            activeTab={activeTab}
+            onPress={() => changeTab(item)}
+          />
+        ))}
+      </View>
+
+      {/* scrollView container */}
+      <Animated.ScrollView
+        ref={scrollRef}
+        pagingEnabled
+        scrollEventThrottle={16}
+        horizontal
+        onScroll={onScrollEvent}>
+        {/* chat tab container */}
+        <View style={styles.tabContentContainer}>
+          <View style={{flex: 1}}>
+            <ScrollView style={styles.tabScrollStyle}>
+              {numbers.map(item => (
+                <ChatComp key={item} />
+              ))}
+              <SizedBox extraStyle={{height: 30}} />
+            </ScrollView>
+            {/* go to contacts positionbutton */}
+            <PositionButton
+              onPress={() => navigation.navigate('Contacts')}
+              children={
+                <MaterialIcons
+                  name="message"
+                  color={AppColors.WHITE}
+                  size={22}
+                />
+              }
+            />
+          </View>
+        </View>
+
+        {/* group tab container */}
+        <View style={styles.tabContentContainer}>
+          <ScrollView style={styles.tabScrollStyle}>
+            <ChatComp />
+            <SizedBox extraStyle={{height: 30}} />
+          </ScrollView>
+
+          {/* go to group positionbutton */}
+          <PositionButton
+            onPress={() => navigation.navigate('Contacts')}
+            children={
+              <AntDesign name="plus" color={AppColors.WHITE} size={22} />
+            }
+          />
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 };
@@ -28,7 +129,20 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: AppColors.BLACK,
+  },
+  tabBarContainer: {
+    width: WIDTH,
+    height: HEIGHT * 0.1 - 10,
+    backgroundColor: AppColors.GREY_BLACK,
+    flexDirection: 'row',
+  },
+  tabContentContainer: {
+    width: WIDTH,
+    height: HEIGHT * 0.8,
+    backgroundColor: AppColors.BLACK,
+  },
+  tabScrollStyle: {
+    paddingTop: 15,
   },
 });
