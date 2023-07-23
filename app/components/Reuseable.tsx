@@ -1,7 +1,9 @@
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Pressable} from 'react-native';
 import React from 'react';
 import {WIDTH} from '../utils/AppDimension';
 import {AppColors} from '../utils/AppColors';
+import RegularText from './RegularText';
+import {useNavigation} from '@react-navigation/native';
 
 interface sizedProps {
   extraStyle?: any;
@@ -25,6 +27,24 @@ export const PositionButton = ({children, onPress}: iconInterface) => {
     </TouchableOpacity>
   );
 };
+
+interface shoemoreInterface {
+  onPrees: () => void;
+}
+export const ShowMoreComp = ({onPrees}: shoemoreInterface) => (
+  <View style={styles.showMoreContainer}>
+    <Pressable style={styles.showMoreBtn} onPress={onPrees}>
+      <RegularText text="Profile" extraStyle={styles.showMoreBtnText} />
+    </Pressable>
+  </View>
+);
+
+interface dividerInterface {
+  extraStyle?: any;
+}
+export const Divider = ({extraStyle}: dividerInterface) => (
+  <View style={[styles.dividerContainer, extraStyle]} />
+);
 const styles = StyleSheet.create({
   container: {
     width: WIDTH,
@@ -41,5 +61,35 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 20,
+  },
+
+  showMoreContainer: {
+    width: 150,
+    height: 100,
+    backgroundColor: AppColors.WHITE,
+    position: 'absolute',
+    top: 50,
+    right: 30,
+    zIndex: 999,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  showMoreBtn: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  showMoreBtnText: {
+    color: AppColors.BLACK,
+    fontWeight: '700',
+    fontSize: 17,
+  },
+
+  dividerContainer: {
+    width: WIDTH,
+    borderBottomColor: AppColors.THIN_GREY,
+    borderBottomWidth: 1,
   },
 });

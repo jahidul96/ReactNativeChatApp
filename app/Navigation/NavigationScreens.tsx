@@ -7,6 +7,8 @@ import auth from '@react-native-firebase/auth';
 import Home from '../screens/Home';
 import LoadingScreen from '../screens/LoadingScreen';
 import Contacts from '../screens/Contacts';
+import Profile from '../screens/Profile';
+import Message from '../screens/chat/Message';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -38,6 +40,8 @@ const NavigationScreens = () => {
         {/* app screens */}
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Contacts" component={Contacts} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Message" component={Message} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,18 +6,23 @@ interface inputInterFace {
   placeholder: string;
   setValue: any;
   isPassword?: boolean;
+  extraStyle?: any;
+  multiline?: boolean;
 }
 const RegularInput = ({
   placeholder,
   setValue,
   isPassword = false,
+  extraStyle,
+  multiline = false,
 }: inputInterFace) => (
   <TextInput
     placeholderTextColor={AppColors.WHITE}
     placeholder={placeholder}
-    style={styles.container}
+    style={[styles.container, extraStyle]}
     onChangeText={text => setValue(text)}
     secureTextEntry={isPassword}
+    multiline={multiline}
   />
 );
 

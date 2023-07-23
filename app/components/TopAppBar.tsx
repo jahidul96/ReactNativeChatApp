@@ -1,16 +1,26 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
 import React from 'react';
 import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {AppColors} from '../utils/AppColors';
 import RegularText from './RegularText';
 import {AntDesign, Feather, Ionicons} from '../utils/IconExport';
 import {useNavigation} from '@react-navigation/native';
+import {imgUri} from '../utils/FileExport';
 
 interface appBarInterface {
-  text: string;
+  text?: string;
   back?: boolean;
+  onPressonMore?: () => void;
+  profie?: boolean;
+  message?: boolean;
 }
-const TopAppBar = ({text, back = true}: appBarInterface) => {
+const TopAppBar = ({
+  text,
+  back = true,
+  onPressonMore,
+  profie,
+  message = false,
+}: appBarInterface) => {
   const navigation = useNavigation<any>();
   return (
     <View style={styles.container}>
@@ -24,18 +34,33 @@ const TopAppBar = ({text, back = true}: appBarInterface) => {
             onPress={() => navigation.navigate('Home')}
           />
         )}
-        <RegularText text={text} extraStyle={styles.titleStyle} />
+        {text && <RegularText text={text} extraStyle={styles.titleStyle} />}
+        {message && (
+          <View style={styles.profileWrapper}>
+            <Image source={{uri: imgUri}} style={styles.profileImgStyle} />
+            <View>
+              <RegularText text="Jahidul" extraStyle={styles.nameStyle} />
+              <RegularText text="online" extraStyle={styles.onlineStyle} />
+            </View>
+          </View>
+        )}
       </View>
 
-      <View style={styles.titleWrapper}>
-        <Ionicons
-          name="search"
-          color={AppColors.WHITE}
-          size={22}
-          style={{marginRight: 15}}
-        />
-        <Feather name="more-vertical" color={AppColors.WHITE} size={22} />
-      </View>
+      {profie ? (
+        <View></View>
+      ) : (
+        <View style={styles.titleWrapper}>
+          <Ionicons
+            name="search"
+            color={AppColors.WHITE}
+            size={22}
+            style={{marginRight: 15}}
+          />
+          <TouchableOpacity onPress={onPressonMore}>
+            <Feather name="more-vertical" color={AppColors.WHITE} size={22} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -47,7 +72,7 @@ const styles = StyleSheet.create({
     width: WIDTH,
     height: HEIGHT * 0.1 - 10,
     backgroundColor: AppColors.GREY_BLACK,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -59,5 +84,24 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 22,
     fontWeight: 'bold',
+  },
+  profileWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileImgStyle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: AppColors.WHITE,
+    marginRight: 8,
+  },
+
+  nameStyle: {
+    fontSize: 16,
+  },
+  onlineStyle: {
+    fontSize: 13,
   },
 });

@@ -1,7 +1,6 @@
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {WIDTH} from '../utils/AppDimension';
-import RegularText from './RegularText';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import {AppColors} from '../utils/AppColors';
 
@@ -20,7 +19,7 @@ const Tab = ({item, index, activeTab, onPress}: tabInterface) => {
         activeTab.value === index
           ? withTiming(AppColors.WHITE, {duration: 300})
           : withTiming('transparent', {duration: 300}),
-      borderBottomWidth: withTiming(4, {duration: 300}),
+      borderBottomWidth: withTiming(3, {duration: 300}),
     };
   });
   const textAnimStyle = useAnimatedStyle(() => {

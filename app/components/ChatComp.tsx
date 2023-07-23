@@ -11,16 +11,20 @@ import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {imgUri} from '../utils/FileExport';
 import RegularText from './RegularText';
 import {AppColors} from '../utils/AppColors';
+import {useNavigation} from '@react-navigation/native';
 
 interface chatInterface {
   isChat?: boolean;
+  onPress: () => void;
+  onLongPress: () => void;
 }
-const ChatComp = ({isChat = true}: chatInterface) => {
+const ChatComp = ({isChat = true, onPress, onLongPress}: chatInterface) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      activeOpacity={0.7}
-      onLongPress={() => Alert.alert('233')}>
+      activeOpacity={0.8}
+      onPress={onPress}
+      onLongPress={onLongPress}>
       <Image source={{uri: imgUri}} style={styles.imgStyle} />
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
@@ -49,8 +53,8 @@ const styles = StyleSheet.create({
   },
 
   imgStyle: {
-    width: 52,
-    height: 52,
+    width: 50,
+    height: 50,
     borderRadius: 30,
     marginRight: 15,
     borderWidth: 1,
@@ -70,5 +74,6 @@ const styles = StyleSheet.create({
   lastMsgStyle: {
     color: AppColors.GREY,
     marginTop: -3,
+    fontSize: 14,
   },
 });

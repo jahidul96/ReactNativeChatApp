@@ -5,6 +5,7 @@ import {
   StatusBar,
   ScrollView,
   NativeScrollEvent,
+  Pressable,
 } from 'react-native';
 import React, {useRef, useCallback, useState} from 'react';
 import auth from '@react-native-firebase/auth';
@@ -20,16 +21,17 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import ChatComp from '../components/ChatComp';
-import {PositionButton, SizedBox} from '../components/Reuseable';
+import {PositionButton, ShowMoreComp, SizedBox} from '../components/Reuseable';
 import {AntDesign, MaterialIcons} from '../utils/IconExport';
+import RegularText from '../components/RegularText';
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Home = () => {
   const navigation = useNavigation<any>();
   const translateX = useSharedValue(0);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
+  const [showMore, setShowMore] = useState(false);
 
   // onScrollEvent function
   const onScrollEvent = useAnimatedScrollHandler({
@@ -52,6 +54,21 @@ const Home = () => {
   const activeTab = useDerivedValue(() => {
     return Math.round(translateX.value / WIDTH);
   });
+
+  // toggle show more
+  const toggleShowMore = () => {
+    setShowMore(!showMore);
+  };
+
+  // onprees on chat
+  const onPreesOnChat = (text: string) => {
+    if (text == 'singleChat') {
+      navigation.navigate('Message');
+    }
+  };
+  // onLongprees on chat
+  const onLongPreesOnChat = (text: string) => {};
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -59,7 +76,17 @@ const Home = () => {
         barStyle={'light-content'}
       />
       {/* topappBar */}
-      <TopAppBar text="Chatapp" back={false} />
+      <TopAppBar text="Chatapp" back={false} onPressonMore={toggleShowMore} />
+
+      {/* show more buttons */}
+      {showMore && (
+        <ShowMoreComp
+          onPrees={() => {
+            setShowMore(!showMore);
+            navigation.navigate('Profile');
+          }}
+        />
+      )}
 
       {/* tabbar */}
       <View style={styles.tabBarContainer}>
@@ -86,7 +113,11 @@ const Home = () => {
           <View style={{flex: 1}}>
             <ScrollView style={styles.tabScrollStyle}>
               {numbers.map(item => (
-                <ChatComp key={item} />
+                <ChatComp
+                  key={item}
+                  onLongPress={() => onLongPreesOnChat('singleChat')}
+                  onPress={() => onPreesOnChat('singleChat')}
+                />
               ))}
               <SizedBox extraStyle={{height: 30}} />
             </ScrollView>
@@ -107,7 +138,10 @@ const Home = () => {
         {/* group tab container */}
         <View style={styles.tabContentContainer}>
           <ScrollView style={styles.tabScrollStyle}>
-            <ChatComp />
+            <ChatComp
+              onLongPress={() => onLongPreesOnChat('groupChat')}
+              onPress={() => onPreesOnChat('groupChat')}
+            />
             <SizedBox extraStyle={{height: 30}} />
           </ScrollView>
 
@@ -131,6 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: AppColors.BLACK,
   },
+
   tabBarContainer: {
     width: WIDTH,
     height: HEIGHT * 0.1 - 10,
