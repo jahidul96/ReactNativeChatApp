@@ -16,22 +16,16 @@ import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 interface footerInterface {
   setValue: any;
   value: any;
+  onPreesFile: () => void;
 }
 
 const ICONVIEWPOS = 0;
-const Footer = ({setValue, value}: footerInterface) => {
-  const [textInputHeight, setTextInputHeight] = useState(40);
-  const [onFoucs, setOnfocus] = useState(false);
+const Footer = ({setValue, value, onPreesFile}: footerInterface) => {
+  const [textInputHeight, setTextInputHeight] = useState(50);
 
   const handleInputContentSizeChange = (event: any) => {
     if (event.nativeEvent.contentSize.height > 150) return;
     setTextInputHeight(event.nativeEvent.contentSize.height);
-  };
-
-  // handleValue
-
-  const handleValue = (text: any) => {
-    setValue(text);
   };
 
   // inputContainerAnimation
@@ -40,15 +34,15 @@ const Footer = ({setValue, value}: footerInterface) => {
       borderRadius: value
         ? withTiming(10, {duration: 300})
         : withTiming(30, {duration: 300}),
-      alignItems: onFoucs
-        ? withTiming('flex-end', {duration: 300})
-        : withTiming('center', {duration: 300}),
     };
   });
 
   // iconView animated styling
   const iconViewAnimStyle = useAnimatedStyle(() => {
     return {
+      width: value
+        ? withTiming(0, {duration: 500})
+        : withTiming(80, {duration: 500}),
       transform: [
         {
           translateX: value
@@ -63,17 +57,15 @@ const Footer = ({setValue, value}: footerInterface) => {
   });
 
   return (
-    <View style={[styles.container, {height: 60}]}>
+    <View style={[styles.container, {height: 50}]}>
       <Animated.View style={[styles.leftContainer, inputContainerAnimStyle]}>
         {/* textinput */}
         <TextInput
           multiline
-          onFocus={() => setOnfocus(true)}
-          onBlur={() => setOnfocus(false)}
           placeholderTextColor={AppColors.WHITE}
           placeholder="type..."
           value={value}
-          onChangeText={handleValue}
+          onChangeText={text => setValue(text)}
           onContentSizeChange={handleInputContentSizeChange}
           style={[styles.inputStyle, {height: Math.max(40, textInputHeight)}]}
         />
@@ -81,7 +73,7 @@ const Footer = ({setValue, value}: footerInterface) => {
         {/* link and camera icon comp */}
 
         <Animated.View style={[styles.leftIconWrapper, iconViewAnimStyle]}>
-          <TouchableOpacity onPress={() => Alert.alert('122')}>
+          <TouchableOpacity onPress={onPreesFile}>
             <AntDesign name="link" size={23} color={AppColors.WHITE} />
           </TouchableOpacity>
           <TouchableOpacity style={{marginLeft: 10}}>
@@ -93,13 +85,13 @@ const Footer = ({setValue, value}: footerInterface) => {
       {/* recording/send button button comp */}
       {value ? (
         <Pressable style={styles.rightContainer}>
-          <Ionicons name="send-sharp" size={25} color={AppColors.WHITE} />
+          <Ionicons name="send-sharp" size={20} color={AppColors.WHITE} />
         </Pressable>
       ) : (
         <Pressable style={styles.rightContainer}>
           <MaterialIcons
             name="keyboard-voice"
-            size={25}
+            size={22}
             color={AppColors.WHITE}
           />
         </Pressable>
@@ -123,11 +115,11 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     flex: 1,
-    minHeight: 50,
+    minHeight: 47,
     marginRight: 3,
     backgroundColor: AppColors.GREY_BLACK,
     flexDirection: 'row',
-
+    alignItems: 'center',
     overflow: 'hidden',
   },
   inputStyle: {
@@ -138,15 +130,14 @@ const styles = StyleSheet.create({
   },
 
   leftIconWrapper: {
-    width: 80,
     height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   rightContainer: {
-    width: 50,
-    height: 50,
+    width: 47,
+    height: 47,
     borderRadius: 100,
     backgroundColor: AppColors.GREY_BLACK,
     justifyContent: 'center',
