@@ -4,8 +4,11 @@ import TopAppBar from '../../components/TopAppBar';
 import Footer from './Footer';
 import {AppColors} from '../../utils/AppColors';
 import AnimatedFileModal from '../../components/AnimatedFileModal';
+import {messageData} from '../../data/messageData';
+import MessageComp from './MessageComp';
+import {SizedBox} from '../../components/Reuseable';
 
-const Message = () => {
+const MessageScreen = () => {
   const [value, setValue] = useState();
   const [showFileModal, setShowFileModal] = useState(false);
 
@@ -19,7 +22,12 @@ const Message = () => {
       <TopAppBar back message />
 
       {/* message section */}
-      <ScrollView style={styles.textContainer}></ScrollView>
+      <ScrollView style={styles.textContainer}>
+        <SizedBox />
+        {messageData.map((message, index) => (
+          <MessageComp message={message} key={index} />
+        ))}
+      </ScrollView>
 
       {/* file modal */}
       <AnimatedFileModal showFileModal={showFileModal} />
@@ -30,7 +38,7 @@ const Message = () => {
   );
 };
 
-export default Message;
+export default MessageScreen;
 
 const styles = StyleSheet.create({
   container: {

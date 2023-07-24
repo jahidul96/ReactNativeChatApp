@@ -17,8 +17,17 @@ interface chatInterface {
   isChat?: boolean;
   onPress: () => void;
   onLongPress: () => void;
+  profilePic: string;
+  username: string;
+  lastMsg: string;
 }
-const ChatComp = ({isChat = true, onPress, onLongPress}: chatInterface) => {
+const ChatComp = ({
+  isChat = true,
+  onPress,
+  onLongPress,
+  lastMsg,
+  username,
+}: chatInterface) => {
   return (
     <TouchableOpacity
       style={styles.container}
@@ -28,11 +37,11 @@ const ChatComp = ({isChat = true, onPress, onLongPress}: chatInterface) => {
       <Image source={{uri: imgUri}} style={styles.imgStyle} />
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
-          <RegularText text="Jahidul islam" />
+          <RegularText text={username} />
           {isChat && <RegularText text="1h" />}
         </View>
         <View style={[styles.nameAndDateStyle, {marginTop: -10}]}>
-          <RegularText text="last msg" extraStyle={styles.lastMsgStyle} />
+          <RegularText text={lastMsg} extraStyle={styles.lastMsgStyle} />
         </View>
       </View>
     </TouchableOpacity>

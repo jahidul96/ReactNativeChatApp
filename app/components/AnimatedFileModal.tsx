@@ -12,15 +12,15 @@ const AnimatedFileModal = ({showFileModal}: animatedFileModelinterface) => {
   // file modal anim style
   const fileModalAnimStyle = useAnimatedStyle(() => {
     return {
-      opacity: showFileModal
-        ? withTiming(1, {duration: 500})
-        : withTiming(0, {duration: 500}),
-      display: showFileModal
-        ? withTiming('flex', {duration: 500})
-        : withTiming('none', {duration: 500}),
+      // opacity: showFileModal
+      //   ? withTiming(1, {duration: 500})
+      //   : withTiming(0, {duration: 500}),
+      // display: showFileModal
+      //   ? withTiming('flex', {duration: 500})
+      //   : withTiming('none', {duration: 500}),
       bottom: showFileModal
-        ? withTiming(80, {duration: 500})
-        : withTiming(-10, {duration: 500}),
+        ? withTiming(70, {duration: 500})
+        : withTiming(-210, {duration: 500}),
     };
   });
 

@@ -35,6 +35,7 @@ const Register = () => {
     pushToken: '',
     uid: '',
     profilePic: '',
+    bio: 'Hey There, I am using chatapp',
   };
 
   const goToGallery = async () => {

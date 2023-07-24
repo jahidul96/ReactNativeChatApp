@@ -57,7 +57,7 @@ const Footer = ({setValue, value, onPreesFile}: footerInterface) => {
   });
 
   return (
-    <View style={[styles.container, {height: 50}]}>
+    <View style={[styles.container]}>
       <Animated.View style={[styles.leftContainer, inputContainerAnimStyle]}>
         {/* textinput */}
         <TextInput
@@ -105,13 +105,13 @@ export default Footer;
 const styles = StyleSheet.create({
   container: {
     width: WIDTH,
-    // minHeight: 60,
-    backgroundColor: AppColors.BLACK,
+    backgroundColor: 'transparent',
+    minHeight: 50,
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 4,
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 5,
   },
   leftContainer: {
     flex: 1,

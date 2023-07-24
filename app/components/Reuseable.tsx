@@ -45,6 +45,16 @@ interface dividerInterface {
 export const Divider = ({extraStyle}: dividerInterface) => (
   <View style={[styles.dividerContainer, extraStyle]} />
 );
+
+interface emptyInterface {
+  infoText: string;
+}
+export const EmptyInfoComp = ({infoText}: emptyInterface) => (
+  <View style={styles.emptyContainer}>
+    <RegularText text={infoText} />
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
     width: WIDTH,
@@ -91,5 +101,12 @@ const styles = StyleSheet.create({
     width: WIDTH,
     borderBottomColor: AppColors.THIN_GREY,
     borderBottomWidth: 1,
+  },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: AppColors.BLACK,
   },
 });

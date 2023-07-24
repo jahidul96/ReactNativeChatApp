@@ -1,25 +1,57 @@
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import TopAppBar from '../components/TopAppBar';
 import ChatComp from '../components/ChatComp';
 import {AppColors} from '../utils/AppColors';
-import {SizedBox} from '../components/Reuseable';
-
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import {EmptyInfoComp, SizedBox} from '../components/Reuseable';
+import {getAllContacts} from '../firebase/fbFireStore';
+import {chatInterface} from '../utils/interfaceExports';
+import LoadingScreen from './LoadingScreen';
 
 const Contacts = () => {
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAllContacts()
+      .then(data => {
+        // console.log('this is from contact', data);
+        setContacts(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err.message);
+      });
+  }, []);
   return (
     <View style={styles.container}>
       {/* topappBar */}
       <TopAppBar text="Contacts" />
 
-      {/* contacts  */}
-      <ScrollView style={{paddingTop: 10}} overScrollMode="never">
-        {numbers.map(item => (
-          <ChatComp key={item} isChat={false} />
-        ))}
-        <SizedBox />
-      </ScrollView>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <ScrollView style={{paddingTop: 10}} overScrollMode="never">
+          {contacts.length == 0 ? (
+            <EmptyInfoComp infoText="No Contacts" />
+          ) : (
+            contacts.map((item: chatInterface, index) => (
+              <ChatComp
+                profilePic={item.profilePic}
+                username={item.username}
+                lastMsg={item.bio}
+                onLongPress={() => {}}
+                onPress={() => {}}
+                key={index}
+                isChat={false}
+              />
+            ))
+          )}
+
+          <SizedBox />
+        </ScrollView>
+      )}
     </View>
   );
 };

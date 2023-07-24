@@ -7,7 +7,13 @@ import {
   NativeScrollEvent,
   Pressable,
 } from 'react-native';
-import React, {useRef, useCallback, useState} from 'react';
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import TopAppBar from '../components/TopAppBar';
@@ -24,6 +30,8 @@ import ChatComp from '../components/ChatComp';
 import {PositionButton, ShowMoreComp, SizedBox} from '../components/Reuseable';
 import {AntDesign, MaterialIcons} from '../utils/IconExport';
 import RegularText from '../components/RegularText';
+import {getUserData} from '../firebase/fbFireStore';
+import {AppContext} from '../context/AppContext';
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -32,6 +40,7 @@ const Home = () => {
   const translateX = useSharedValue(0);
   const scrollRef = useRef<Animated.ScrollView>(null);
   const [showMore, setShowMore] = useState(false);
+  const {setUser} = useContext(AppContext);
 
   // onScrollEvent function
   const onScrollEvent = useAnimatedScrollHandler({
@@ -63,11 +72,25 @@ const Home = () => {
   // onprees on chat
   const onPreesOnChat = (text: string) => {
     if (text == 'singleChat') {
-      navigation.navigate('Message');
+      navigation.navigate('MessageScreen');
     }
   };
   // onLongprees on chat
   const onLongPreesOnChat = (text: string) => {};
+
+  // get data on first render
+
+  useEffect(() => {
+    getUserData()
+      .then(user => {
+        setUser(user.data());
+        // console.log(user.id);
+        // console.log(user.data());
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  }, []);
 
   return (
     <View style={styles.container}>

@@ -4,4 +4,5 @@ export const AppColors = {
   GREY_BLACK: '#20262E',
   GREY: 'grey',
   THIN_GREY: '#DDE6ED',
+  BLUE_DARK: '#0D1282',
 };

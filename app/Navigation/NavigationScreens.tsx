@@ -8,7 +8,7 @@ import Home from '../screens/Home';
 import LoadingScreen from '../screens/LoadingScreen';
 import Contacts from '../screens/Contacts';
 import Profile from '../screens/Profile';
-import Message from '../screens/chat/Message';
+import MessageScreen from '../screens/chat/MessageScreen';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -41,7 +41,7 @@ const NavigationScreens = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Contacts" component={Contacts} />
         <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="Message" component={Message} />
+        <Stack.Screen name="MessageScreen" component={MessageScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -12,9 +12,7 @@ import RegularInput from '../../components/RegularInput';
 import RegularButton from '../../components/RegularButton';
 import AuthLinkComp from './AuthLinkComp';
 import {useNavigation} from '@react-navigation/native';
-import {Text} from 'react-native';
-import {Ionicons} from '../../utils/IconExport';
-import {TouchableOpacity} from 'react-native';
+
 import RegularText from '../../components/RegularText';
 import {signinWithFb} from '../../firebase/fbAuth';
 

@@ -1,14 +1,36 @@
-import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, View, Image, Pressable, Modal} from 'react-native';
+import React, {useState, useContext} from 'react';
 import TopAppBar from '../components/TopAppBar';
-import {WIDTH} from '../utils/AppDimension';
+import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {imgUri} from '../utils/FileExport';
 import {AppColors} from '../utils/AppColors';
 import RegularText from '../components/RegularText';
 import {AntDesign, MaterialCommunityIcons} from '../utils/IconExport';
 import {Divider} from '../components/Reuseable';
+import RegularButton from '../components/RegularButton';
+import AlertModal from '../components/AlertModal';
+import auth from '@react-native-firebase/auth';
+import {useNavigation} from '@react-navigation/native';
+import {AppContext} from '../context/AppContext';
 
 const Profile = () => {
+  const [logoutModal, setLogoutModal] = useState(false);
+  const navigation = useNavigation<any>();
+  const {user, setUser} = useContext(AppContext);
+
+  // console.log('userFrom firebase', user);
+
+  const logoutUser = () => {
+    auth()
+      .signOut()
+      .then(() => {
+        setUser(null);
+        navigation.reset({routes: [{name: 'Register'}]});
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  };
   return (
     <View style={styles.container}>
       {/* topAppbar */}
@@ -16,9 +38,17 @@ const Profile = () => {
 
       {/* profile section */}
       <View style={styles.profileContainer}>
-        <Image style={styles.imgStyle} source={{uri: imgUri}} />
+        {user ? (
+          <Image style={styles.imgStyle} source={{uri: user?.profilePic}} />
+        ) : (
+          <Image style={styles.imgStyle} source={{uri: imgUri}} />
+        )}
+
         <View style={styles.nameWrapper}>
-          <RegularText text={'Jahidul Islam'} extraStyle={styles.nameStyle} />
+          <RegularText
+            text={user ? user?.username : 'Username'}
+            extraStyle={styles.nameStyle}
+          />
           <MaterialCommunityIcons name="pencil" size={22} />
         </View>
         <RegularText
@@ -29,12 +59,26 @@ const Profile = () => {
 
       <Divider extraStyle={{marginTop: 10}} />
       {/* pageButtons */}
-      <PageButton text="Contacts" />
-      <PageButton text="Chats" />
-      <PageButton text="Privacy" />
-      <PageButton text="Account" />
-      <PageButton text="Settings" />
-      <PageButton text="Logout" />
+      <PageButton text="Contacts" onPress={() => {}} />
+      <PageButton text="Chats" onPress={() => {}} />
+      <PageButton text="Privacy" onPress={() => {}} />
+      <PageButton text="Account" onPress={() => {}} />
+      <PageButton text="Settings" onPress={() => {}} />
+      <PageButton
+        text="Logout"
+        onPress={() => {
+          setLogoutModal(!logoutModal);
+        }}
+      />
+
+      {/* logout modal */}
+
+      <AlertModal
+        infoText="Are you Sure ?"
+        visible={logoutModal}
+        setVisiable={setLogoutModal}
+        onPressOk={logoutUser}
+      />
     </View>
   );
 };
@@ -43,10 +87,11 @@ export default Profile;
 
 interface pageBtnInterface {
   text: string;
+  onPress: () => void;
 }
-const PageButton = ({text}: pageBtnInterface) => {
+const PageButton = ({text, onPress}: pageBtnInterface) => {
   return (
-    <Pressable style={styles.pageBtnContainer}>
+    <Pressable style={styles.pageBtnContainer} onPress={onPress}>
       <RegularText text={text} extraStyle={styles.buttonTextStyle} />
       <AntDesign name="right" size={22} />
     </Pressable>
