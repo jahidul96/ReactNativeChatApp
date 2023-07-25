@@ -27,6 +27,7 @@ const ChatComp = ({
   onLongPress,
   lastMsg,
   username,
+  profilePic,
 }: chatInterface) => {
   return (
     <TouchableOpacity
@@ -34,7 +35,10 @@ const ChatComp = ({
       activeOpacity={0.8}
       onPress={onPress}
       onLongPress={onLongPress}>
-      <Image source={{uri: imgUri}} style={styles.imgStyle} />
+      <Image
+        source={{uri: profilePic ? profilePic : imgUri}}
+        style={styles.imgStyle}
+      />
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
           <RegularText text={username} />

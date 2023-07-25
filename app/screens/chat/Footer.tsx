@@ -17,10 +17,11 @@ interface footerInterface {
   setValue: any;
   value: any;
   onPreesFile: () => void;
+  onSend: () => void;
 }
 
 const ICONVIEWPOS = 0;
-const Footer = ({setValue, value, onPreesFile}: footerInterface) => {
+const Footer = ({setValue, value, onPreesFile, onSend}: footerInterface) => {
   const [textInputHeight, setTextInputHeight] = useState(50);
 
   const handleInputContentSizeChange = (event: any) => {
@@ -84,7 +85,7 @@ const Footer = ({setValue, value, onPreesFile}: footerInterface) => {
 
       {/* recording/send button button comp */}
       {value ? (
-        <Pressable style={styles.rightContainer}>
+        <Pressable style={styles.rightContainer} onPress={onSend}>
           <Ionicons name="send-sharp" size={20} color={AppColors.WHITE} />
         </Pressable>
       ) : (

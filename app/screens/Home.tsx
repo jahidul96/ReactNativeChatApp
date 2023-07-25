@@ -14,7 +14,6 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import TopAppBar from '../components/TopAppBar';
 import {AppColors} from '../utils/AppColors';
@@ -27,13 +26,18 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import ChatComp from '../components/ChatComp';
-import {PositionButton, ShowMoreComp, SizedBox} from '../components/Reuseable';
+import {
+  EmptyInfoComp,
+  PositionButton,
+  ShowMoreComp,
+  SizedBox,
+} from '../components/Reuseable';
 import {AntDesign, MaterialIcons} from '../utils/IconExport';
-import RegularText from '../components/RegularText';
 import {getUserData} from '../firebase/fbFireStore';
 import {AppContext} from '../context/AppContext';
-
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import LoadingScreen from './LoadingScreen';
+import {chatInterface} from '../utils/interfaceExports';
+import getRealtimeChats from '../firebase/RealTimeChats';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -41,6 +45,9 @@ const Home = () => {
   const scrollRef = useRef<Animated.ScrollView>(null);
   const [showMore, setShowMore] = useState(false);
   const {setUser} = useContext(AppContext);
+  const [loading, setLoading] = useState(true);
+  const [groups, setGroups] = useState([]);
+  const chats = getRealtimeChats();
 
   // onScrollEvent function
   const onScrollEvent = useAnimatedScrollHandler({
@@ -70,22 +77,27 @@ const Home = () => {
   };
 
   // onprees on chat
-  const onPreesOnChat = (text: string) => {
-    if (text == 'singleChat') {
-      navigation.navigate('MessageScreen');
-    }
+  const onPreesOnChat = (chat: chatInterface) => {
+    navigation.navigate('MessageScreen', {
+      isGroupChat: false,
+      profilePic: chat.chatterProfilePic,
+      name: chat.chatterName,
+      chatId: chat.chatterId,
+    });
   };
   // onLongprees on chat
   const onLongPreesOnChat = (text: string) => {};
 
   // get data on first render
-
   useEffect(() => {
+    // get userData
     getUserData()
       .then(user => {
         setUser(user.data());
-        // console.log(user.id);
-        // console.log(user.data());
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
       })
       .catch(err => {
         console.log(err.message);
@@ -125,26 +137,36 @@ const Home = () => {
       </View>
 
       {/* scrollView container */}
-      <Animated.ScrollView
-        ref={scrollRef}
-        pagingEnabled
-        scrollEventThrottle={16}
-        horizontal
-        onScroll={onScrollEvent}>
-        {/* chat tab container */}
-        <View style={styles.tabContentContainer}>
-          <View style={{flex: 1}}>
-            <ScrollView style={styles.tabScrollStyle}>
-              {numbers.map(item => (
-                <ChatComp
-                  key={item}
-                  onLongPress={() => onLongPreesOnChat('singleChat')}
-                  onPress={() => onPreesOnChat('singleChat')}
-                />
-              ))}
-              <SizedBox extraStyle={{height: 30}} />
-            </ScrollView>
-            {/* go to contacts positionbutton */}
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <Animated.ScrollView
+          ref={scrollRef}
+          pagingEnabled
+          scrollEventThrottle={16}
+          horizontal
+          onScroll={onScrollEvent}>
+          {/* chat tab container */}
+
+          <View style={styles.tabContentContainer}>
+            {chats.length == 0 ? (
+              <EmptyInfoComp infoText="No Chats" />
+            ) : (
+              <ScrollView style={styles.tabScrollStyle}>
+                {chats.map((chat: chatInterface) => (
+                  <ChatComp
+                    key={chat.chatterId}
+                    profilePic={chat.chatterProfilePic}
+                    username={chat.chatterName}
+                    lastMsg={chat.lastMsg}
+                    onLongPress={() => onLongPreesOnChat('singleChat')}
+                    onPress={() => onPreesOnChat(chat)}
+                  />
+                ))}
+                <SizedBox extraStyle={{height: 30}} />
+              </ScrollView>
+            )}
+
             <PositionButton
               onPress={() => navigation.navigate('Contacts')}
               children={
@@ -156,27 +178,31 @@ const Home = () => {
               }
             />
           </View>
-        </View>
 
-        {/* group tab container */}
-        <View style={styles.tabContentContainer}>
-          <ScrollView style={styles.tabScrollStyle}>
-            <ChatComp
-              onLongPress={() => onLongPreesOnChat('groupChat')}
-              onPress={() => onPreesOnChat('groupChat')}
+          {/* group tab container */}
+          <View style={styles.tabContentContainer}>
+            {groups.length == 0 ? (
+              <EmptyInfoComp infoText="No Groups" />
+            ) : (
+              <ScrollView style={styles.tabScrollStyle}>
+                <ChatComp
+                  onLongPress={() => onLongPreesOnChat('groupChat')}
+                  onPress={() => {}}
+                />
+                <SizedBox extraStyle={{height: 30}} />
+              </ScrollView>
+            )}
+
+            {/* go to group positionbutton */}
+            <PositionButton
+              onPress={() => navigation.navigate('Contacts')}
+              children={
+                <AntDesign name="plus" color={AppColors.WHITE} size={22} />
+              }
             />
-            <SizedBox extraStyle={{height: 30}} />
-          </ScrollView>
-
-          {/* go to group positionbutton */}
-          <PositionButton
-            onPress={() => navigation.navigate('Contacts')}
-            children={
-              <AntDesign name="plus" color={AppColors.WHITE} size={22} />
-            }
-          />
-        </View>
-      </Animated.ScrollView>
+          </View>
+        </Animated.ScrollView>
+      )}
     </View>
   );
 };

@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+
 export const addUserToFb = (data, userId) => {
   return new Promise((resolve, reject) => {
     firestore()
@@ -52,4 +53,84 @@ export const getAllContacts = () => {
         reject(err);
       });
   });
+};
+
+export const getGroups = setData => {
+  const data = [];
+  firestore()
+    .collection('Groups')
+    .where('members', 'array-contains', auth().currentUser.uid)
+    .onSnapshot(querySnapshot => {
+      querySnapshot.docs.forEach(doc => {
+        let val = {groupId: doc.id, groupData: doc.data()};
+        data.push(val);
+      });
+    });
+
+  setData(data);
+};
+
+export const oneToOneChatMessage = (
+  message,
+  friendId,
+  friendProfilePic,
+  friendUsername,
+  myData,
+) => {
+  const myChatData = {
+    lastMsg: message,
+    chatterId: friendId,
+    chatterProfilePic: friendProfilePic,
+    chatterName: friendUsername,
+    updatedAt: Date.now(),
+    media: false,
+  };
+  const friendChatData = {
+    lastMsg: message,
+    chatterId: myData.uid,
+    chatterProfilePic: myData.profilePic,
+    chatterName: myData.username,
+    updatedAt: Date.now(),
+    media: false,
+  };
+
+  let oneToOneMessageData = {
+    text: message,
+    senderId: myData.uid,
+    createdAt: Date.now(),
+    media: {
+      isAdded: false,
+      type: '',
+    },
+    urls: [],
+  };
+
+  // adding chat to current user db
+  addChatToDb(myData.uid, friendId, myChatData);
+  // adding messge to current user message collection
+  addMessage(myData.uid, friendId, oneToOneMessageData);
+
+  // adding chat to friend db
+  addChatToDb(friendId, myData.uid, friendChatData);
+  // adding messge to friends message collection
+  addMessage(friendId, myData.uid, oneToOneMessageData);
+};
+
+const addChatToDb = (userId, chatId, chatData) => {
+  firestore()
+    .collection('Users')
+    .doc(userId)
+    .collection('chats')
+    .doc(chatId)
+    .set(chatData);
+};
+
+const addMessage = (userId, chatDocId, messageData) => {
+  firestore()
+    .collection('Users')
+    .doc(userId)
+    .collection('chats')
+    .doc(chatDocId)
+    .collection('messages')
+    .add(messageData);
 };

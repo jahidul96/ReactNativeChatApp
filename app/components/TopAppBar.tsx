@@ -13,6 +13,8 @@ interface appBarInterface {
   onPressonMore?: () => void;
   profie?: boolean;
   message?: boolean;
+  name?: string;
+  profilePic?: string;
 }
 const TopAppBar = ({
   text,
@@ -20,6 +22,8 @@ const TopAppBar = ({
   onPressonMore,
   profie,
   message = false,
+  name,
+  profilePic,
 }: appBarInterface) => {
   const navigation = useNavigation<any>();
   return (
@@ -31,15 +35,18 @@ const TopAppBar = ({
             color={AppColors.WHITE}
             size={25}
             style={{marginRight: 15}}
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => navigation.goBack()}
           />
         )}
         {text && <RegularText text={text} extraStyle={styles.titleStyle} />}
         {message && (
           <View style={styles.profileWrapper}>
-            <Image source={{uri: imgUri}} style={styles.profileImgStyle} />
+            <Image
+              source={{uri: profilePic ? profilePic : imgUri}}
+              style={styles.profileImgStyle}
+            />
             <View>
-              <RegularText text="Jahidul" extraStyle={styles.nameStyle} />
+              <RegularText text={name!} extraStyle={styles.nameStyle} />
               <RegularText text="online" extraStyle={styles.onlineStyle} />
             </View>
           </View>

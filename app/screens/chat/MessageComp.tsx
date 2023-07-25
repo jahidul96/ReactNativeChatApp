@@ -1,23 +1,23 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {AppColors} from '../../utils/AppColors';
-
-interface message {
-  userId: number;
-  text: string;
-}
+import {messageInterface} from '../../utils/interfaceExports';
+import {AppContext} from '../../context/AppContext';
 
 interface messageCompInterface {
-  message: message;
+  message: messageInterface;
 }
 
-const myId = 1;
 const MessageComp = ({message}: messageCompInterface) => {
+  const {user} = useContext(AppContext);
+
   // conditionalStyleing
+
+  // console.log(message.senderId);
   const msgSideStyle =
-    message.userId == myId ? styles.myMsgSide : styles.friendMsgSide;
+    message.senderId == user.uid ? styles.myMsgSide : styles.friendMsgSide;
   const msgBG =
-    message.userId == myId ? AppColors.GREY_BLACK : AppColors.BLUE_DARK;
+    message.senderId == user.uid ? AppColors.GREY_BLACK : AppColors.BLUE_DARK;
 
   return (
     <View style={[styles.messageContainer, msgSideStyle]}>
@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
   },
   msgTextStyle: {
     fontSize: 15,
-    backgroundColor: AppColors.GREY_BLACK,
     paddingHorizontal: 13,
     paddingVertical: 7,
     minWidth: '10%',

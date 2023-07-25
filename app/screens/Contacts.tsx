@@ -5,12 +5,24 @@ import ChatComp from '../components/ChatComp';
 import {AppColors} from '../utils/AppColors';
 import {EmptyInfoComp, SizedBox} from '../components/Reuseable';
 import {getAllContacts} from '../firebase/fbFireStore';
-import {chatInterface} from '../utils/interfaceExports';
+import {userInterface} from '../utils/interfaceExports';
 import LoadingScreen from './LoadingScreen';
+import {useNavigation} from '@react-navigation/native';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<any>();
+
+  // onprees on chat
+  const onPreesOnChat = (contact: userInterface) => {
+    navigation.navigate('MessageScreen', {
+      isGroupChat: false,
+      profilePic: contact.profilePic,
+      name: contact.username,
+      chatId: contact.uid,
+    });
+  };
 
   useEffect(() => {
     getAllContacts()
@@ -36,13 +48,13 @@ const Contacts = () => {
           {contacts.length == 0 ? (
             <EmptyInfoComp infoText="No Contacts" />
           ) : (
-            contacts.map((item: chatInterface, index) => (
+            contacts.map((contact: userInterface, index) => (
               <ChatComp
-                profilePic={item.profilePic}
-                username={item.username}
-                lastMsg={item.bio}
+                profilePic={contact.profilePic}
+                username={contact.username}
+                lastMsg={contact.bio}
                 onLongPress={() => {}}
-                onPress={() => {}}
+                onPress={() => onPreesOnChat(contact)}
                 key={index}
                 isChat={false}
               />
