@@ -75,7 +75,9 @@ export const oneToOneChatMessage = (
   friendId,
   friendProfilePic,
   friendUsername,
-  myData,
+  user,
+  messageData,
+  media,
 ) => {
   const myChatData = {
     lastMsg: message,
@@ -83,37 +85,28 @@ export const oneToOneChatMessage = (
     chatterProfilePic: friendProfilePic,
     chatterName: friendUsername,
     updatedAt: Date.now(),
-    media: false,
+    media: media,
+    newMessage: false,
   };
   const friendChatData = {
     lastMsg: message,
-    chatterId: myData.uid,
-    chatterProfilePic: myData.profilePic,
-    chatterName: myData.username,
+    chatterId: user.uid,
+    chatterProfilePic: user.profilePic,
+    chatterName: user.username,
     updatedAt: Date.now(),
-    media: false,
-  };
-
-  let oneToOneMessageData = {
-    text: message,
-    senderId: myData.uid,
-    createdAt: Date.now(),
-    media: {
-      isAdded: false,
-      type: '',
-    },
-    urls: [],
+    media: media,
+    newMessage: true,
   };
 
   // adding chat to current user db
-  addChatToDb(myData.uid, friendId, myChatData);
+  addChatToDb(user.uid, friendId, myChatData);
   // adding messge to current user message collection
-  addMessage(myData.uid, friendId, oneToOneMessageData);
+  addMessage(user.uid, friendId, messageData);
 
   // adding chat to friend db
-  addChatToDb(friendId, myData.uid, friendChatData);
+  addChatToDb(friendId, user.uid, friendChatData);
   // adding messge to friends message collection
-  addMessage(friendId, myData.uid, oneToOneMessageData);
+  addMessage(friendId, user.uid, messageData);
 };
 
 const addChatToDb = (userId, chatId, chatData) => {
@@ -133,4 +126,18 @@ const addMessage = (userId, chatDocId, messageData) => {
     .doc(chatDocId)
     .collection('messages')
     .add(messageData);
+};
+
+const updateMessageCounter = (userId, counter) => {
+  const ref = firestore().collection('Users').doc(userId);
+  ref.update({messageCounter: counter + 1});
+};
+
+export const updateSeenStatus = (myId, chatId) => {
+  firestore()
+    .collection('Users')
+    .doc(myId)
+    .collection('chats')
+    .doc(chatId)
+    .update({newMessage: false});
 };

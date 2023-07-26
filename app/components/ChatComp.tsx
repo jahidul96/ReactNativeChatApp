@@ -12,6 +12,7 @@ import {imgUri} from '../utils/FileExport';
 import RegularText from './RegularText';
 import {AppColors} from '../utils/AppColors';
 import {useNavigation} from '@react-navigation/native';
+import {AntDesign, Ionicons} from '../utils/IconExport';
 
 interface chatInterface {
   isChat?: boolean;
@@ -20,6 +21,7 @@ interface chatInterface {
   profilePic: string;
   username: string;
   lastMsg: string;
+  newMessage?: boolean;
 }
 const ChatComp = ({
   isChat = true,
@@ -28,6 +30,7 @@ const ChatComp = ({
   lastMsg,
   username,
   profilePic,
+  newMessage,
 }: chatInterface) => {
   return (
     <TouchableOpacity
@@ -45,7 +48,28 @@ const ChatComp = ({
           {isChat && <RegularText text="1h" />}
         </View>
         <View style={[styles.nameAndDateStyle, {marginTop: -10}]}>
-          <RegularText text={lastMsg} extraStyle={styles.lastMsgStyle} />
+          <View style={styles.photoIconWrapper}>
+            {isChat && lastMsg == 'Photo' && (
+              <Ionicons
+                name="image"
+                style={{marginRight: 5}}
+                color={AppColors.WHITE}
+                size={15}
+              />
+            )}
+            <RegularText
+              text={
+                lastMsg.length > 30 ? lastMsg.slice(0, 29) + '...' : lastMsg
+              }
+              extraStyle={styles.lastMsgStyle}
+            />
+          </View>
+
+          {newMessage && (
+            <View style={styles.newAlertStyle}>
+              <RegularText text="new" extraStyle={styles.newTextStyle} />
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -88,5 +112,24 @@ const styles = StyleSheet.create({
     color: AppColors.GREY,
     marginTop: -3,
     fontSize: 14,
+  },
+
+  photoIconWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  newAlertStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    borderRadius: 20,
+  },
+  newTextStyle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 2,
   },
 });

@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, ScrollView} from 'react-native';
-import React, {useContext, useState, useEffect} from 'react';
+import {StyleSheet, View, ScrollView, Alert} from 'react-native';
+import React, {useContext, useState, useEffect, createRef} from 'react';
 import TopAppBar from '../../components/TopAppBar';
 import Footer from './Footer';
 import {AppColors} from '../../utils/AppColors';
@@ -15,6 +15,10 @@ import {AppContext} from '../../context/AppContext';
 import {oneToOneChatMessage} from '../../firebase/fbFireStore';
 import getOneToOneMessages from '../../firebase/RealTimeOneToOneMessages';
 import LoadingScreen from '../LoadingScreen';
+import {useNavigation} from '@react-navigation/native';
+import {lanunchUserCamera} from '../../features/messageScreenFunc';
+import CameraImageModal from './CameraImageModal';
+import {uploadFilesToBucket} from '../../firebase/fbStorage';
 
 interface routeParams {
   route: {
@@ -22,21 +26,86 @@ interface routeParams {
   };
 }
 const MessageScreen = ({route}: routeParams) => {
-  const [value, setValue] = useState('');
+  const [text, setText] = useState('');
   const [showFileModal, setShowFileModal] = useState(false);
   const {user} = useContext(AppContext);
   const {isGroupChat, profilePic, name, chatId} = route.params;
   const [loading, setLoading] = useState(true);
-  const chatsMessages = getOneToOneMessages(chatId);
+  const chatMessages = getOneToOneMessages(chatId);
+  const navigation = useNavigation<any>();
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraTakenImage, setCameraTakenImage] = useState<string | null>();
+  const scrollRef = createRef<ScrollView>();
 
-  const onPreesFile = () => {
-    setShowFileModal(!showFileModal);
+  let messageData = {
+    text: text,
+    senderId: user.uid,
+    createdAt: Date.now(),
+    media: false,
+    file: {
+      urls: [],
+      type: '',
+      fileCount: 0,
+    },
+  };
+  const sendMessage = async (val: string) => {
+    if (val == 'image') {
+      console.log('camera image');
+
+      const filePath = `cameraImages/${Date.now()}cameraImage.jpg`;
+      // uploading image to firebase bucket
+      let url = await uploadFilesToBucket(cameraTakenImage, filePath);
+
+      messageData.file.urls = [url];
+      messageData.file.fileCount = 1;
+      messageData.file.type = 'image';
+      messageData.media = true;
+      setShowCamera(false);
+      oneToOneChatMessage(
+        text,
+        chatId,
+        profilePic,
+        name,
+        user,
+        messageData,
+        true,
+      );
+      setText('');
+      setCameraTakenImage(null);
+    } else {
+      oneToOneChatMessage(
+        text,
+        chatId,
+        profilePic,
+        name,
+        user,
+        messageData,
+        false,
+      );
+      setText('');
+    }
+
+    // console.log('message send and chat added!');
   };
 
-  const sendMessage = () => {
-    oneToOneChatMessage(value, chatId, profilePic, name, user);
-    setValue('');
-    // console.log('message send and chat added!');
+  // onPress cameraIcon
+  const onPressOnCameraIcon = async () => {
+    setShowCamera(!showCamera);
+    lanunchUserCamera(setShowCamera).then(result => {
+      setCameraTakenImage(result);
+    });
+  };
+
+  const goToMedia = (text: string) => {
+    if (text == 'Camera') {
+      setShowFileModal(!showFileModal);
+      setShowCamera(!showCamera);
+      lanunchUserCamera(setShowCamera).then(result => {
+        setCameraTakenImage(result);
+      });
+    } else {
+      Alert.alert('Not Done Yet!!!!');
+    }
   };
 
   useEffect(() => {
@@ -54,12 +123,17 @@ const MessageScreen = ({route}: routeParams) => {
       {loading ? (
         <LoadingScreen />
       ) : (
-        <ScrollView style={styles.textContainer}>
+        <ScrollView
+          style={styles.textContainer}
+          ref={scrollRef}
+          onContentSizeChange={() =>
+            scrollRef.current?.scrollToEnd({animated: true})
+          }>
           <SizedBox />
-          {chatsMessages.length == 0 ? (
+          {chatMessages.length == 0 ? (
             <EmptyInfoComp infoText="No Messages" />
           ) : (
-            chatsMessages.map((message: messageInterface, index) => (
+            chatMessages.map((message: messageInterface, index) => (
               <MessageComp key={index} message={message} />
             ))
           )}
@@ -67,15 +141,30 @@ const MessageScreen = ({route}: routeParams) => {
       )}
 
       {/* file modal */}
-      <AnimatedFileModal showFileModal={showFileModal} />
+      <AnimatedFileModal
+        showFileModal={showFileModal}
+        onMediaPress={goToMedia}
+      />
 
       {/* footer section */}
       <Footer
-        setValue={setValue}
-        value={value}
-        onPreesFile={onPreesFile}
-        onSend={sendMessage}
+        setValue={setText}
+        value={text}
+        onPreesFile={() => setShowFileModal(!showFileModal)}
+        onSend={() => sendMessage('text')}
+        onPressCamera={onPressOnCameraIcon}
       />
+
+      {/* camera image modal */}
+      {showCamera && (
+        <CameraImageModal
+          visible={showCamera}
+          setVisiable={setShowCamera}
+          imgUrl={cameraTakenImage!}
+          name={name}
+          onPress={() => sendMessage('image')}
+        />
+      )}
     </View>
   );
 };

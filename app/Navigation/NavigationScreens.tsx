@@ -9,6 +9,7 @@ import LoadingScreen from '../screens/LoadingScreen';
 import Contacts from '../screens/Contacts';
 import Profile from '../screens/Profile';
 import MessageScreen from '../screens/chat/MessageScreen';
+import ImageShowCaseScreen from '../screens/chat/ImageShowCaseScreen';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -42,6 +43,11 @@ const NavigationScreens = () => {
         <Stack.Screen name="Contacts" component={Contacts} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="MessageScreen" component={MessageScreen} />
+        <Stack.Screen
+          options={{animation: 'fade_from_bottom'}}
+          name="ImageShowCaseScreen"
+          component={ImageShowCaseScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

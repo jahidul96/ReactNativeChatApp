@@ -27,7 +27,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>();
 
   const userData = {
     email,
@@ -46,7 +46,11 @@ const Register = () => {
       maxWidth: 200,
     });
 
-    setImage(result.assets[0].uri);
+    if (result.didCancel) return;
+
+    if (result.assets) {
+      setImage(result.assets[0].uri);
+    }
   };
   const handleSignIn = async () => {
     if (!email || !password || !username || !image) {

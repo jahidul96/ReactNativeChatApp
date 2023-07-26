@@ -14,6 +14,7 @@ export interface chatInterface {
   lastMsg: string;
   media: boolean;
   updatedAt: Date;
+  newMessage: boolean;
 }
 
 // types.ts
@@ -28,9 +29,20 @@ export interface messageInterface {
   text: string;
   senderId: string;
   createdAt: Date;
-  media: {
-    isAdded: false;
+  media: boolean;
+  file: {
+    urls: [];
     type: string;
+    fileCount: number;
   };
-  urls: Array<[]>;
+}
+
+export interface imgShowScreenparamsInterface {
+  imgUrl: Array<string>;
+  isMultiple: boolean;
+  name: string;
+  chatId: string;
+  profilePic: string;
+  user: userInterface;
+  setShowCamera: any;
 }

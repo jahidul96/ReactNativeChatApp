@@ -18,10 +18,17 @@ interface footerInterface {
   value: any;
   onPreesFile: () => void;
   onSend: () => void;
+  onPressCamera: () => void;
 }
 
 const ICONVIEWPOS = 0;
-const Footer = ({setValue, value, onPreesFile, onSend}: footerInterface) => {
+const Footer = ({
+  setValue,
+  value,
+  onPreesFile,
+  onSend,
+  onPressCamera,
+}: footerInterface) => {
   const [textInputHeight, setTextInputHeight] = useState(50);
 
   const handleInputContentSizeChange = (event: any) => {
@@ -77,7 +84,7 @@ const Footer = ({setValue, value, onPreesFile, onSend}: footerInterface) => {
           <TouchableOpacity onPress={onPreesFile}>
             <AntDesign name="link" size={23} color={AppColors.WHITE} />
           </TouchableOpacity>
-          <TouchableOpacity style={{marginLeft: 10}}>
+          <TouchableOpacity style={{marginLeft: 10}} onPress={onPressCamera}>
             <Ionicons name="camera" size={25} color={AppColors.WHITE} />
           </TouchableOpacity>
         </Animated.View>

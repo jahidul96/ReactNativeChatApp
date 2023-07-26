@@ -33,7 +33,7 @@ import {
   SizedBox,
 } from '../components/Reuseable';
 import {AntDesign, MaterialIcons} from '../utils/IconExport';
-import {getUserData} from '../firebase/fbFireStore';
+import {getUserData, updateSeenStatus} from '../firebase/fbFireStore';
 import {AppContext} from '../context/AppContext';
 import LoadingScreen from './LoadingScreen';
 import {chatInterface} from '../utils/interfaceExports';
@@ -48,6 +48,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState([]);
   const chats = getRealtimeChats();
+  const {user} = useContext(AppContext);
 
   // onScrollEvent function
   const onScrollEvent = useAnimatedScrollHandler({
@@ -78,6 +79,10 @@ const Home = () => {
 
   // onprees on chat
   const onPreesOnChat = (chat: chatInterface) => {
+    if (chat.newMessage) {
+      console.log(chat.newMessage);
+      updateSeenStatus(user.uid, chat.chatterId);
+    }
     navigation.navigate('MessageScreen', {
       isGroupChat: false,
       profilePic: chat.chatterProfilePic,
@@ -158,9 +163,10 @@ const Home = () => {
                     key={chat.chatterId}
                     profilePic={chat.chatterProfilePic}
                     username={chat.chatterName}
-                    lastMsg={chat.lastMsg}
+                    lastMsg={chat.media ? 'Photo' : chat.lastMsg}
                     onLongPress={() => onLongPreesOnChat('singleChat')}
                     onPress={() => onPreesOnChat(chat)}
+                    newMessage={chat.newMessage}
                   />
                 ))}
                 <SizedBox extraStyle={{height: 30}} />
@@ -217,7 +223,7 @@ const styles = StyleSheet.create({
 
   tabBarContainer: {
     width: WIDTH,
-    height: HEIGHT * 0.1 - 10,
+    height: HEIGHT * 0.1 - 20,
     backgroundColor: AppColors.GREY_BLACK,
     flexDirection: 'row',
   },
