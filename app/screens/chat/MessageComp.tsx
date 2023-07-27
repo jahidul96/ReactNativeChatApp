@@ -6,14 +6,12 @@ import {AppContext} from '../../context/AppContext';
 
 interface messageCompInterface {
   message: messageInterface;
+  isGroupChat: boolean;
 }
 
-const MessageComp = ({message}: messageCompInterface) => {
+const MessageComp = ({message, isGroupChat}: messageCompInterface) => {
   const {user} = useContext(AppContext);
 
-  // conditionalStyleing
-
-  // console.log(message.senderId);
   const msgSideStyle =
     message.senderId == user.uid ? styles.myMsgSide : styles.friendMsgSide;
   const msgBG =
@@ -26,12 +24,16 @@ const MessageComp = ({message}: messageCompInterface) => {
 
   return (
     <View style={[styles.messageContainer, msgSideStyle]}>
-      {message.media && message.file.type == 'image' && (
-        <View style={[styles.imgWrapper, borderCurveStyle]}>
-          <Image source={{uri: message.file.urls[0]}} style={styles.imgStyle} />
-        </View>
-      )}
+      {/* message image show */}
+      {message.media &&
+        message.file.type == 'image' &&
+        message.file.urls.map((url, index, arr) => (
+          <View key={index} style={[styles.imgWrapper, borderCurveStyle]}>
+            <Image source={{uri: url}} style={styles.imgStyle} />
+          </View>
+        ))}
 
+      {/* text show */}
       {message.text == '' ? (
         <View />
       ) : (
@@ -41,6 +43,7 @@ const MessageComp = ({message}: messageCompInterface) => {
             {
               backgroundColor: msgBG,
             },
+            borderCurveStyle,
           ]}>
           {message.text}
         </Text>
@@ -64,16 +67,21 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     minWidth: '10%',
     maxWidth: '80%',
-    borderRadius: 16,
     color: AppColors.WHITE,
   },
   myMsgSide: {alignItems: 'flex-end'},
   friendMsgSide: {alignItems: 'flex-start', textAlign: 'left'},
+
   imgWrapper: {
     width: '70%',
     height: 200,
     backgroundColor: AppColors.GREY_BLACK,
     padding: 10,
+  },
+
+  multipleImageWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 
   meSideBorderCurver: {
@@ -88,5 +96,9 @@ const styles = StyleSheet.create({
   },
   imgStyle: {
     flex: 1,
+  },
+  twoImgStyle: {
+    width: '50%',
+    height: '100%',
   },
 });

@@ -16,9 +16,13 @@ import {oneToOneChatMessage} from '../../firebase/fbFireStore';
 import getOneToOneMessages from '../../firebase/RealTimeOneToOneMessages';
 import LoadingScreen from '../LoadingScreen';
 import {useNavigation} from '@react-navigation/native';
-import {lanunchUserCamera} from '../../features/messageScreenFunc';
+import {
+  lanunchUserCamera,
+  sendOneToOneMessage,
+} from '../../features/messageScreenFunc';
 import CameraImageModal from './CameraImageModal';
-import {uploadFilesToBucket} from '../../firebase/fbStorage';
+import {PhotoPlacehoderComp} from './ChatReusableComp';
+import GalleryModal from './GalleryModal';
 
 interface routeParams {
   route: {
@@ -32,60 +36,27 @@ const MessageScreen = ({route}: routeParams) => {
   const {isGroupChat, profilePic, name, chatId} = route.params;
   const [loading, setLoading] = useState(true);
   const chatMessages = getOneToOneMessages(chatId);
-  const navigation = useNavigation<any>();
   const [showCamera, setShowCamera] = useState(false);
   const [cameraTakenImage, setCameraTakenImage] = useState<string | null>();
+  const [sendingPhotos, setSendingPhotos] = useState(false);
+  const [gallery, setGallery] = useState(false);
+
   const scrollRef = createRef<ScrollView>();
 
-  let messageData = {
-    text: text,
-    senderId: user.uid,
-    createdAt: Date.now(),
-    media: false,
-    file: {
-      urls: [],
-      type: '',
-      fileCount: 0,
-    },
-  };
   const sendMessage = async (val: string) => {
-    if (val == 'image') {
-      console.log('camera image');
-
-      const filePath = `cameraImages/${Date.now()}cameraImage.jpg`;
-      // uploading image to firebase bucket
-      let url = await uploadFilesToBucket(cameraTakenImage, filePath);
-
-      messageData.file.urls = [url];
-      messageData.file.fileCount = 1;
-      messageData.file.type = 'image';
-      messageData.media = true;
-      setShowCamera(false);
-      oneToOneChatMessage(
-        text,
-        chatId,
-        profilePic,
-        name,
-        user,
-        messageData,
-        true,
-      );
-      setText('');
-      setCameraTakenImage(null);
-    } else {
-      oneToOneChatMessage(
-        text,
-        chatId,
-        profilePic,
-        name,
-        user,
-        messageData,
-        false,
-      );
-      setText('');
-    }
-
-    // console.log('message send and chat added!');
+    sendOneToOneMessage(
+      val,
+      text,
+      user,
+      name,
+      chatId,
+      profilePic,
+      cameraTakenImage,
+      setCameraTakenImage,
+      setShowCamera,
+      setSendingPhotos,
+    );
+    setText('');
   };
 
   // onPress cameraIcon
@@ -97,12 +68,16 @@ const MessageScreen = ({route}: routeParams) => {
   };
 
   const goToMedia = (text: string) => {
+    // getting camera image
     if (text == 'Camera') {
       setShowFileModal(!showFileModal);
       setShowCamera(!showCamera);
       lanunchUserCamera(setShowCamera).then(result => {
         setCameraTakenImage(result);
       });
+    } else if (text == 'Gallery') {
+      setShowFileModal(!showFileModal);
+      setGallery(!gallery);
     } else {
       Alert.alert('Not Done Yet!!!!');
     }
@@ -134,9 +109,12 @@ const MessageScreen = ({route}: routeParams) => {
             <EmptyInfoComp infoText="No Messages" />
           ) : (
             chatMessages.map((message: messageInterface, index) => (
-              <MessageComp key={index} message={message} />
+              <MessageComp key={index} message={message} isGroupChat={false} />
             ))
           )}
+
+          {/* photoplaceHolder */}
+          {sendingPhotos && <PhotoPlacehoderComp />}
         </ScrollView>
       )}
 
@@ -159,10 +137,22 @@ const MessageScreen = ({route}: routeParams) => {
       {showCamera && (
         <CameraImageModal
           visible={showCamera}
-          setVisiable={setShowCamera}
+          onRequestClose={() => setShowCamera(!showCamera)}
           imgUrl={cameraTakenImage!}
           name={name}
           onPress={() => sendMessage('image')}
+        />
+      )}
+
+      {/* gallery pick image modal */}
+
+      {gallery && (
+        <GalleryModal
+          visible={gallery}
+          onRequestClose={() => setGallery(!gallery)}
+          name={name}
+          onPress={() => {}}
+          setVisiable={setGallery}
         />
       )}
     </View>

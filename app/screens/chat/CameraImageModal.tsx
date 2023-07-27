@@ -6,14 +6,14 @@ import {MediaSendFooter} from './ChatReusableComp';
 
 interface modalInterface {
   visible: boolean;
-  setVisiable: any;
+  onRequestClose: () => void;
   imgUrl: string;
   name: string;
   onPress: () => void;
 }
 const CameraImageModal = ({
   visible,
-  setVisiable,
+  onRequestClose,
   imgUrl,
   name,
   onPress,
@@ -23,16 +23,10 @@ const CameraImageModal = ({
       animationType="fade"
       transparent={true}
       visible={visible}
-      onRequestClose={() => {
-        setVisiable(false);
-      }}>
+      onRequestClose={onRequestClose}>
       {/* toggler */}
       <Pressable style={styles.centeredView}>
-        <Pressable
-          style={styles.closeBtnWrapper}
-          onPress={() => {
-            setVisiable(false);
-          }}>
+        <Pressable style={styles.closeBtnWrapper} onPress={onRequestClose}>
           <AntDesign name="close" size={25} />
         </Pressable>
 

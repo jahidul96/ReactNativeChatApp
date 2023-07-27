@@ -15,6 +15,7 @@ interface appBarInterface {
   message?: boolean;
   name?: string;
   profilePic?: string;
+  onPressBack?: () => {};
 }
 const TopAppBar = ({
   text,
@@ -24,6 +25,7 @@ const TopAppBar = ({
   message = false,
   name,
   profilePic,
+  onPressBack,
 }: appBarInterface) => {
   const navigation = useNavigation<any>();
   return (
@@ -35,7 +37,7 @@ const TopAppBar = ({
             color={AppColors.WHITE}
             size={25}
             style={{marginRight: 15}}
-            onPress={() => navigation.goBack()}
+            onPress={onPressBack ? onPressBack : () => navigation.goBack()}
           />
         )}
         {text && <RegularText text={text} extraStyle={styles.titleStyle} />}

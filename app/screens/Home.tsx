@@ -193,7 +193,7 @@ const Home = () => {
               <ScrollView style={styles.tabScrollStyle}>
                 <ChatComp
                   onLongPress={() => onLongPreesOnChat('groupChat')}
-                  onPress={() => {}}
+                  onPress={() => navigation.navigate('CreateGroup')}
                 />
                 <SizedBox extraStyle={{height: 30}} />
               </ScrollView>
