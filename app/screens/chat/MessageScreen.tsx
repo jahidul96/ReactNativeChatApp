@@ -23,6 +23,7 @@ import {
 import CameraImageModal from './CameraImageModal';
 import {PhotoPlacehoderComp} from './ChatReusableComp';
 import GalleryModal from './GalleryModal';
+import {uploadFilesToBucket} from '../../firebase/fbStorage';
 
 interface routeParams {
   route: {
@@ -40,9 +41,10 @@ const MessageScreen = ({route}: routeParams) => {
   const [cameraTakenImage, setCameraTakenImage] = useState<string | null>();
   const [sendingPhotos, setSendingPhotos] = useState(false);
   const [gallery, setGallery] = useState(false);
-
+  const [selectedImg, setSelectedImg] = useState<Array<string>>([]);
   const scrollRef = createRef<ScrollView>();
 
+  // send message
   const sendMessage = async (val: string) => {
     sendOneToOneMessage(
       val,
@@ -55,6 +57,9 @@ const MessageScreen = ({route}: routeParams) => {
       setCameraTakenImage,
       setShowCamera,
       setSendingPhotos,
+      setGallery,
+      selectedImg,
+      setSelectedImg,
     );
     setText('');
   };
@@ -140,7 +145,7 @@ const MessageScreen = ({route}: routeParams) => {
           onRequestClose={() => setShowCamera(!showCamera)}
           imgUrl={cameraTakenImage!}
           name={name}
-          onPress={() => sendMessage('image')}
+          onPress={() => sendMessage('cameraImg')}
         />
       )}
 
@@ -151,8 +156,10 @@ const MessageScreen = ({route}: routeParams) => {
           visible={gallery}
           onRequestClose={() => setGallery(!gallery)}
           name={name}
-          onPress={() => {}}
+          onPress={() => sendMessage('gallery')}
           setVisiable={setGallery}
+          selectedImg={selectedImg}
+          setSelectedImg={setSelectedImg}
         />
       )}
     </View>

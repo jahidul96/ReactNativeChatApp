@@ -29,6 +29,9 @@ export const sendOneToOneMessage = async (
   setCameraTakenImage,
   setShowCamera,
   setSendingPhotos,
+  setGallery,
+  selectedImg,
+  setSelectedImg,
 ) => {
   let messageData = {
     text: text,
@@ -38,22 +41,18 @@ export const sendOneToOneMessage = async (
     file: {
       urls: [],
       type: '',
-      fileCount: 0,
     },
   };
 
-  setSendingPhotos(true);
-
-  setShowCamera(false);
-
   // image and text send!
-  if (val == 'image') {
+  if (val == 'cameraImg') {
+    setSendingPhotos(true);
+    setShowCamera(false);
     const filePath = `cameraImages/${Date.now()}cameraImage.jpg`;
     // uploading image to firebase bucket
     let url = await uploadFilesToBucket(cameraTakenImage, filePath);
 
     messageData.file.urls = [url];
-    messageData.file.fileCount = 1;
     messageData.file.type = 'image';
     messageData.media = true;
 
@@ -68,8 +67,40 @@ export const sendOneToOneMessage = async (
     );
     setSendingPhotos(false);
     setCameraTakenImage(null);
+  } else if (val == 'gallery') {
+    setSendingPhotos(true);
+    setGallery(false);
+
+    // uploading image to bucket
+    let urls = [];
+    for (let i = 0; i < selectedImg.length; i++) {
+      const img = selectedImg[i];
+      const uniqueFilePath = `galleryImages/${Date.now()}-${i}-galleryImage.jpg`;
+      let url = await uploadFilesToBucket(img, uniqueFilePath);
+      urls.push(url);
+    }
+
+    messageData.file.urls = urls;
+    messageData.file.type = 'image';
+    messageData.media = true;
+
+    oneToOneChatMessage(
+      text,
+      chatId,
+      profilePic,
+      name,
+      user,
+      messageData,
+      true,
+    );
+    setSendingPhotos(false);
+    setSelectedImg([]);
+    console.log('img added succesfully');
   } else {
     // jus text send
+    if (text == '') {
+      return;
+    }
     oneToOneChatMessage(
       text,
       chatId,

@@ -14,10 +14,9 @@ import CreateGroup from '../screens/CreateGroup';
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
   const [initializing, setInitializing] = useState(true);
-  const [authUser, setAuthUser] = useState();
   const [initialRoute, setInitialRoute] = useState('');
+
   function onAuthStateChanged(user: any) {
-    setAuthUser(user);
     setInitialRoute(user ? 'Home' : 'Register');
     if (initializing) setInitializing(false);
   }
