@@ -1,7 +1,11 @@
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {Alert} from 'react-native';
 import {uploadFilesToBucket} from '../firebase/fbStorage';
-import {oneToOneChatMessage} from '../firebase/fbFireStore';
+import {
+  addMessageToGroup,
+  oneToOneChatMessage,
+  updateGroupInfo,
+} from '../firebase/fbFireStore';
 
 export const lanunchUserCamera = async setValue => {
   try {
@@ -13,6 +17,7 @@ export const lanunchUserCamera = async setValue => {
 
     return result.assets[0].uri;
   } catch (error) {
+    setValue(false);
     Alert.alert(error.message);
     console.log(error.message);
   }
@@ -25,74 +30,76 @@ export const sendOneToOneMessage = async (
   name,
   chatId,
   profilePic,
-  cameraTakenImage,
-  setCameraTakenImage,
   setShowCamera,
   setSendingPhotos,
   setGallery,
   selectedImg,
   setSelectedImg,
+  isGroupChat,
 ) => {
   let messageData = {
     text: text,
-    senderId: user.uid,
+    senderDetails: user,
     createdAt: Date.now(),
     media: false,
+    isGroupChat,
     file: {
       urls: [],
       type: '',
     },
   };
 
+  let updateGroupData = {
+    lastMsg: text,
+    newGroup: false,
+    media: false,
+    senderId: user.uid,
+    updatedAt: Date.now(),
+    newMessage: true,
+  };
   // image and text send!
-  if (val == 'cameraImg') {
+  if (val == 'image') {
     setSendingPhotos(true);
     setShowCamera(false);
-    const filePath = `cameraImages/${Date.now()}cameraImage.jpg`;
-    // uploading image to firebase bucket
-    let url = await uploadFilesToBucket(cameraTakenImage, filePath);
-
-    messageData.file.urls = [url];
-    messageData.file.type = 'image';
-    messageData.media = true;
-
-    oneToOneChatMessage(
-      text,
-      chatId,
-      profilePic,
-      name,
-      user,
-      messageData,
-      true,
-    );
-    setSendingPhotos(false);
-    setCameraTakenImage(null);
-  } else if (val == 'gallery') {
-    setSendingPhotos(true);
     setGallery(false);
 
     // uploading image to bucket
     let urls = [];
-    for (let i = 0; i < selectedImg.length; i++) {
-      const img = selectedImg[i];
-      const uniqueFilePath = `galleryImages/${Date.now()}-${i}-galleryImage.jpg`;
-      let url = await uploadFilesToBucket(img, uniqueFilePath);
+
+    if (selectedImg.length === 1) {
+      const img = selectedImg[0];
+      const filePath = `galleryImages/${Date.now()}-0-galleryImage.jpg`;
+      let url = await uploadFilesToBucket(img, filePath);
       urls.push(url);
+    } else {
+      for (let i = 0; i < selectedImg.length; i++) {
+        const img = selectedImg[i];
+        const filePath = `galleryImages/${Date.now()}-${i}-galleryImage.jpg`;
+        let url = await uploadFilesToBucket(img, filePath);
+        urls.push(url);
+      }
     }
 
     messageData.file.urls = urls;
     messageData.file.type = 'image';
     messageData.media = true;
 
-    oneToOneChatMessage(
-      text,
-      chatId,
-      profilePic,
-      name,
-      user,
-      messageData,
-      true,
-    );
+    if (isGroupChat) {
+      updateGroupData.media = true;
+      addMessageToGroup(chatId, messageData);
+      updateGroupInfo(chatId, updateGroupData);
+    } else {
+      oneToOneChatMessage(
+        text,
+        chatId,
+        profilePic,
+        name,
+        user,
+        messageData,
+        true,
+      );
+    }
+
     setSendingPhotos(false);
     setSelectedImg([]);
     console.log('img added succesfully');
@@ -101,14 +108,20 @@ export const sendOneToOneMessage = async (
     if (text == '') {
       return;
     }
-    oneToOneChatMessage(
-      text,
-      chatId,
-      profilePic,
-      name,
-      user,
-      messageData,
-      false,
-    );
+
+    if (isGroupChat) {
+      addMessageToGroup(chatId, messageData);
+      updateGroupInfo(chatId, updateGroupData);
+    } else {
+      oneToOneChatMessage(
+        text,
+        chatId,
+        profilePic,
+        name,
+        user,
+        messageData,
+        false,
+      );
+    }
   }
 };

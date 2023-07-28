@@ -24,6 +24,7 @@ import CameraImageModal from './CameraImageModal';
 import {PhotoPlacehoderComp} from './ChatReusableComp';
 import GalleryModal from './GalleryModal';
 import {uploadFilesToBucket} from '../../firebase/fbStorage';
+import getGroupMessages from '../../firebase/GetGroupMessages';
 
 interface routeParams {
   route: {
@@ -37,6 +38,7 @@ const MessageScreen = ({route}: routeParams) => {
   const {isGroupChat, profilePic, name, chatId} = route.params;
   const [loading, setLoading] = useState(true);
   const chatMessages = getOneToOneMessages(chatId);
+  const groupMessages = getGroupMessages(chatId);
   const [showCamera, setShowCamera] = useState(false);
   const [cameraTakenImage, setCameraTakenImage] = useState<string | null>();
   const [sendingPhotos, setSendingPhotos] = useState(false);
@@ -44,7 +46,6 @@ const MessageScreen = ({route}: routeParams) => {
   const [selectedImg, setSelectedImg] = useState<Array<string>>([]);
   const scrollRef = createRef<ScrollView>();
 
-  // send message
   const sendMessage = async (val: string) => {
     sendOneToOneMessage(
       val,
@@ -53,22 +54,21 @@ const MessageScreen = ({route}: routeParams) => {
       name,
       chatId,
       profilePic,
-      cameraTakenImage,
-      setCameraTakenImage,
       setShowCamera,
       setSendingPhotos,
       setGallery,
       selectedImg,
       setSelectedImg,
+      isGroupChat,
     );
     setText('');
   };
 
-  // onPress cameraIcon
   const onPressOnCameraIcon = async () => {
     setShowCamera(!showCamera);
     lanunchUserCamera(setShowCamera).then(result => {
-      setCameraTakenImage(result);
+      // setCameraTakenImage(result);
+      setSelectedImg((prevImg: any) => [...prevImg, result]);
     });
   };
 
@@ -78,7 +78,7 @@ const MessageScreen = ({route}: routeParams) => {
       setShowFileModal(!showFileModal);
       setShowCamera(!showCamera);
       lanunchUserCamera(setShowCamera).then(result => {
-        setCameraTakenImage(result);
+        setSelectedImg((prevImg: any) => [...prevImg, result]);
       });
     } else if (text == 'Gallery') {
       setShowFileModal(!showFileModal);
@@ -110,11 +110,27 @@ const MessageScreen = ({route}: routeParams) => {
             scrollRef.current?.scrollToEnd({animated: true})
           }>
           <SizedBox />
-          {chatMessages.length == 0 ? (
+          {isGroupChat ? (
+            groupMessages.length == 0 ? (
+              <EmptyInfoComp infoText="No Messages" />
+            ) : (
+              groupMessages.map((message: messageInterface, index) => (
+                <MessageComp
+                  key={index}
+                  message={message}
+                  isGroupChat={isGroupChat}
+                />
+              ))
+            )
+          ) : chatMessages.length == 0 ? (
             <EmptyInfoComp infoText="No Messages" />
           ) : (
             chatMessages.map((message: messageInterface, index) => (
-              <MessageComp key={index} message={message} isGroupChat={false} />
+              <MessageComp
+                key={index}
+                message={message}
+                isGroupChat={isGroupChat}
+              />
             ))
           )}
 
@@ -143,9 +159,9 @@ const MessageScreen = ({route}: routeParams) => {
         <CameraImageModal
           visible={showCamera}
           onRequestClose={() => setShowCamera(!showCamera)}
-          imgUrl={cameraTakenImage!}
+          imgUrl={selectedImg[0]!}
           name={name}
-          onPress={() => sendMessage('cameraImg')}
+          onPress={() => sendMessage('image')}
         />
       )}
 
@@ -156,7 +172,7 @@ const MessageScreen = ({route}: routeParams) => {
           visible={gallery}
           onRequestClose={() => setGallery(!gallery)}
           name={name}
-          onPress={() => sendMessage('gallery')}
+          onPress={() => sendMessage('image')}
           setVisiable={setGallery}
           selectedImg={selectedImg}
           setSelectedImg={setSelectedImg}

@@ -15,14 +15,19 @@ export const SizedBox = ({extraStyle}: sizedProps) => (
 interface iconInterface {
   children: any;
   onPress: () => void;
+  extraStyle?: any;
 }
 
-export const PositionButton = ({children, onPress}: iconInterface) => {
+export const PositionButton = ({
+  children,
+  onPress,
+  extraStyle,
+}: iconInterface) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={styles.iconContainer}>
+      style={[styles.iconContainer, extraStyle]}>
       {children}
     </TouchableOpacity>
   );

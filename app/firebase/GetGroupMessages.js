@@ -2,17 +2,18 @@ import {useState, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-export const getRealTimeUserData = friendId => {
-  const [data, setData] = useState(null);
+const getGroupMessages = groupId => {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const unsubscribe = firestore()
-      .collection('Users')
-      .doc(friendId)
+      .collection('Groups')
+      .doc(groupId)
+      .collection('messages')
+      .orderBy('createdAt', 'asc')
       .onSnapshot(snapshot => {
-        if (snapshot.exists) {
-          setData(snapshot.data());
-        }
+        const docs = snapshot.docs.map(doc => doc.data());
+        setData(docs);
       });
 
     return () => unsubscribe();
@@ -20,3 +21,5 @@ export const getRealTimeUserData = friendId => {
 
   return data;
 };
+
+export default getGroupMessages;

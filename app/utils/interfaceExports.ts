@@ -27,13 +27,13 @@ export interface messageScreenParams {
 
 export interface messageInterface {
   text: string;
-  senderId: string;
   createdAt: Date;
   media: boolean;
+  isGroupChat: boolean;
+  senderDetails: userInterface;
   file: {
     urls: [];
     type: string;
-    fileCount: number;
   };
 }
 
@@ -45,4 +45,19 @@ export interface imgShowScreenparamsInterface {
   profilePic: string;
   user: userInterface;
   setShowCamera: any;
+}
+
+export interface groupChatInterface {
+  groupName: string;
+  groupProfilePic: string;
+  memberIds: Array<string>;
+  memberDetails: Array<userInterface>;
+  adminDetails: userInterface;
+  lastMsg: string;
+  newGroup: boolean;
+  media: boolean;
+  senderId: string;
+  groupId: string;
+  updatedAt: Date;
+  newMessage: boolean;
 }

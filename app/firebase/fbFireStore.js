@@ -55,21 +55,6 @@ export const getAllContacts = () => {
   });
 };
 
-export const getGroups = setData => {
-  const data = [];
-  firestore()
-    .collection('Groups')
-    .where('members', 'array-contains', auth().currentUser.uid)
-    .onSnapshot(querySnapshot => {
-      querySnapshot.docs.forEach(doc => {
-        let val = {groupId: doc.id, groupData: doc.data()};
-        data.push(val);
-      });
-    });
-
-  setData(data);
-};
-
 export const oneToOneChatMessage = (
   message,
   friendId,
@@ -128,11 +113,6 @@ const addMessage = (userId, chatDocId, messageData) => {
     .add(messageData);
 };
 
-const updateMessageCounter = (userId, counter) => {
-  const ref = firestore().collection('Users').doc(userId);
-  ref.update({messageCounter: counter + 1});
-};
-
 export const updateSeenStatus = (myId, chatId) => {
   firestore()
     .collection('Users')
@@ -140,4 +120,30 @@ export const updateSeenStatus = (myId, chatId) => {
     .collection('chats')
     .doc(chatId)
     .update({newMessage: false});
+};
+
+export const createGroupInDb = groupData => {
+  return new Promise((resolve, reject) => {
+    firestore()
+      .collection('Groups')
+      .add(groupData)
+      .then(val => {
+        resolve(val.id);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+};
+
+export const updateGroupInfo = (id, data) => {
+  firestore().collection('Groups').doc(id).update(data);
+};
+
+export const addMessageToGroup = (groupId, messageData) => {
+  firestore()
+    .collection('Groups')
+    .doc(groupId)
+    .collection('messages')
+    .add(messageData);
 };

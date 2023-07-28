@@ -22,6 +22,7 @@ interface chatInterface {
   username: string;
   lastMsg: string;
   newMessage?: boolean;
+  isSelected?: boolean;
 }
 const ChatComp = ({
   isChat = true,
@@ -31,6 +32,7 @@ const ChatComp = ({
   username,
   profilePic,
   newMessage,
+  isSelected = false,
 }: chatInterface) => {
   return (
     <TouchableOpacity
@@ -38,10 +40,18 @@ const ChatComp = ({
       activeOpacity={0.8}
       onPress={onPress}
       onLongPress={onLongPress}>
-      <Image
-        source={{uri: profilePic ? profilePic : imgUri}}
-        style={styles.imgStyle}
-      />
+      <View>
+        <Image
+          source={{uri: profilePic ? profilePic : imgUri}}
+          style={styles.imgStyle}
+        />
+        {isSelected && (
+          <View style={styles.selectedStyle}>
+            <AntDesign name="check" color={AppColors.WHITE} size={16} />
+          </View>
+        )}
+      </View>
+
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
           <RegularText text={username} />
@@ -131,5 +141,17 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 2,
+  },
+
+  selectedStyle: {
+    width: 18,
+    height: 18,
+    backgroundColor: 'red',
+    borderRadius: 25,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 0,
+    right: 15,
   },
 });

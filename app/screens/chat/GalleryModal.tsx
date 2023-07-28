@@ -61,7 +61,7 @@ const GalleryModal = ({
       transparent={true}
       visible={visible}
       onRequestClose={onRequestClose}>
-      <Pressable style={styles.centeredView}>
+      <View style={styles.centeredView}>
         {previewImages ? (
           <View style={styles.prevSliderContainer}>
             {/* topAppBar */}
@@ -121,7 +121,7 @@ const GalleryModal = ({
 
         {/* bottom sender comp */}
         <MediaSendFooter name={name} onPress={onPress} />
-      </Pressable>
+      </View>
     </Modal>
   );
 };

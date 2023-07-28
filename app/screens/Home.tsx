@@ -36,8 +36,9 @@ import {AntDesign, MaterialIcons} from '../utils/IconExport';
 import {getUserData, updateSeenStatus} from '../firebase/fbFireStore';
 import {AppContext} from '../context/AppContext';
 import LoadingScreen from './LoadingScreen';
-import {chatInterface} from '../utils/interfaceExports';
+import {chatInterface, groupChatInterface} from '../utils/interfaceExports';
 import getRealtimeChats from '../firebase/RealTimeChats';
+import getGroupsChats from '../firebase/GetGroupsChats';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -46,8 +47,8 @@ const Home = () => {
   const [showMore, setShowMore] = useState(false);
   const {setUser} = useContext(AppContext);
   const [loading, setLoading] = useState(true);
-  const [groups, setGroups] = useState([]);
   const chats = getRealtimeChats();
+  const groupChats = getGroupsChats();
   const {user} = useContext(AppContext);
 
   // onScrollEvent function
@@ -88,6 +89,19 @@ const Home = () => {
       profilePic: chat.chatterProfilePic,
       name: chat.chatterName,
       chatId: chat.chatterId,
+    });
+  };
+
+  const goToGroupChat = (group: groupChatInterface) => {
+    if (group.newMessage) {
+      // console.log(chat.newMessage);
+      // updateSeenStatus(user.uid, chat.chatterId);
+    }
+    navigation.navigate('MessageScreen', {
+      isGroupChat: true,
+      profilePic: group.groupProfilePic,
+      name: group.groupName,
+      chatId: group.groupId,
     });
   };
   // onLongprees on chat
@@ -174,7 +188,7 @@ const Home = () => {
             )}
 
             <PositionButton
-              onPress={() => navigation.navigate('Contacts')}
+              onPress={() => navigation.navigate('Contacts', {isContact: true})}
               children={
                 <MaterialIcons
                   name="message"
@@ -187,21 +201,40 @@ const Home = () => {
 
           {/* group tab container */}
           <View style={styles.tabContentContainer}>
-            {groups.length == 0 ? (
-              <EmptyInfoComp infoText="No Groups" />
+            {groupChats.length == 0 ? (
+              <EmptyInfoComp infoText="No Chats" />
             ) : (
               <ScrollView style={styles.tabScrollStyle}>
-                <ChatComp
-                  onLongPress={() => onLongPreesOnChat('groupChat')}
-                  onPress={() => navigation.navigate('CreateGroup')}
-                />
+                {groupChats.map((group: groupChatInterface) => (
+                  <ChatComp
+                    key={group.groupId}
+                    profilePic={group.groupProfilePic}
+                    username={group.groupName}
+                    lastMsg={
+                      group.media
+                        ? 'Photo'
+                        : group.lastMsg == ''
+                        ? 'welcome new Group'
+                        : group.lastMsg
+                    }
+                    onLongPress={() => {}}
+                    onPress={() => goToGroupChat(group)}
+                    newMessage={
+                      group.newMessage && group.senderId != user?.uid
+                        ? true
+                        : false
+                    }
+                  />
+                ))}
                 <SizedBox extraStyle={{height: 30}} />
               </ScrollView>
             )}
 
             {/* go to group positionbutton */}
             <PositionButton
-              onPress={() => navigation.navigate('Contacts')}
+              onPress={() =>
+                navigation.navigate('Contacts', {isContact: false})
+              }
               children={
                 <AntDesign name="plus" color={AppColors.WHITE} size={22} />
               }

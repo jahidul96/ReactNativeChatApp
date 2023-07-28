@@ -9,7 +9,9 @@ import LoadingScreen from '../screens/LoadingScreen';
 import Contacts from '../screens/Contacts';
 import Profile from '../screens/Profile';
 import MessageScreen from '../screens/chat/MessageScreen';
-import CreateGroup from '../screens/CreateGroup';
+
+import ImageSlider from '../screens/chat/ImageSlider';
+import CreateGroup from '../screens/chat/CreateGroup';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -43,6 +45,11 @@ const NavigationScreens = () => {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="MessageScreen" component={MessageScreen} />
         <Stack.Screen name="CreateGroup" component={CreateGroup} />
+        <Stack.Screen
+          name="ImageSlider"
+          component={ImageSlider}
+          options={{animation: 'slide_from_bottom'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
