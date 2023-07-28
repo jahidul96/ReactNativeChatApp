@@ -1,9 +1,11 @@
 import {View, StyleSheet, TouchableOpacity, Pressable} from 'react-native';
 import React from 'react';
-import {WIDTH} from '../utils/AppDimension';
+import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {AppColors} from '../utils/AppColors';
 import RegularText from './RegularText';
 import {useNavigation} from '@react-navigation/native';
+import {AntDesign} from '../utils/IconExport';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 
 interface sizedProps {
   extraStyle?: any;
@@ -60,6 +62,56 @@ export const EmptyInfoComp = ({infoText}: emptyInterface) => (
   </View>
 );
 
+interface deletecomp {
+  info: string;
+  onPress: () => void;
+  onPressBack: () => void;
+  selectedChat: boolean;
+}
+export const DeleteComp = ({
+  info,
+  onPress,
+  onPressBack,
+  selectedChat,
+}: deletecomp) => {
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      top: selectedChat
+        ? withTiming(0, {duration: 300})
+        : withTiming(-80, {duration: 300}),
+      zIndex: selectedChat
+        ? withTiming(999, {duration: 300})
+        : withTiming(-1, {duration: 300}),
+    };
+  });
+  return (
+    <Animated.View style={[styles.deleteContentContainer, animStyle]}>
+      <View style={styles.topLeftInfoComp}>
+        <AntDesign
+          name="arrowleft"
+          color={AppColors.WHITE}
+          size={25}
+          style={{marginRight: 15}}
+          onPress={onPressBack}
+        />
+        <RegularText
+          text={info}
+          extraStyle={{fontWeight: 'bold', fontSize: 18}}
+        />
+      </View>
+
+      <Pressable onPress={onPress}>
+        <AntDesign
+          name="delete"
+          color={AppColors.WHITE}
+          size={22}
+          style={{marginRight: 15}}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     width: WIDTH,
@@ -113,5 +165,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: AppColors.BLACK,
+  },
+  deleteContentContainer: {
+    width: WIDTH,
+    height: HEIGHT * 0.1 - 10,
+    backgroundColor: AppColors.GREY_BLACK,
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  topLeftInfoComp: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

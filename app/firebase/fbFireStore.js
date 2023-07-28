@@ -94,6 +94,7 @@ export const oneToOneChatMessage = (
   addMessage(friendId, user.uid, messageData);
 };
 
+// add single chat
 const addChatToDb = (userId, chatId, chatData) => {
   firestore()
     .collection('Users')
@@ -103,6 +104,18 @@ const addChatToDb = (userId, chatId, chatData) => {
     .set(chatData);
 };
 
+// delete single message
+export const deleteMessageChat = (userId, chatId) => {
+  deleteOneToOneMessage(userId, chatId);
+  firestore()
+    .collection('Users')
+    .doc(userId)
+    .collection('chats')
+    .doc(chatId)
+    .delete();
+};
+
+// add message to single chat
 const addMessage = (userId, chatDocId, messageData) => {
   firestore()
     .collection('Users')
@@ -113,6 +126,24 @@ const addMessage = (userId, chatDocId, messageData) => {
     .add(messageData);
 };
 
+// delete OneToone all messages
+const deleteOneToOneMessage = (userId, chatId) => {
+  firestore()
+    .collection('Users')
+    .doc(userId)
+    .collection('chats')
+    .doc(chatId)
+    .collection('messages')
+    .get()
+    .then(documentSnapshot => {
+      documentSnapshot.docs.forEach(doc => {
+        doc.ref.delete();
+      });
+    })
+    .catch(err => {});
+};
+
+// update chat/message status
 export const updateSeenStatus = (myId, chatId) => {
   firestore()
     .collection('Users')
@@ -122,6 +153,7 @@ export const updateSeenStatus = (myId, chatId) => {
     .update({newMessage: false});
 };
 
+// createGroup
 export const createGroupInDb = groupData => {
   return new Promise((resolve, reject) => {
     firestore()
@@ -136,14 +168,37 @@ export const createGroupInDb = groupData => {
   });
 };
 
+// update grp info
 export const updateGroupInfo = (id, data) => {
   firestore().collection('Groups').doc(id).update(data);
 };
 
+// add message to group
 export const addMessageToGroup = (groupId, messageData) => {
   firestore()
     .collection('Groups')
     .doc(groupId)
     .collection('messages')
     .add(messageData);
+};
+
+// delete grp
+export const deleteGroupFromFb = async groupId => {
+  deleteGrpMessages(groupId);
+  firestore().collection('Groups').doc(groupId).delete();
+};
+
+// delete all grp messages
+export const deleteGrpMessages = groupId => {
+  firestore()
+    .collection('Groups')
+    .doc(groupId)
+    .collection('messages')
+    .get()
+    .then(documentSnapshot => {
+      documentSnapshot.docs.forEach(doc => {
+        doc.ref.delete();
+      });
+    })
+    .catch(err => {});
 };

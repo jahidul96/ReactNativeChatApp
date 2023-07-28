@@ -16,6 +16,7 @@ interface appBarInterface {
   name?: string;
   profilePic?: string;
   onPressBack?: () => {};
+  extraStyle?: any;
 }
 const TopAppBar = ({
   text,
@@ -26,10 +27,11 @@ const TopAppBar = ({
   name,
   profilePic,
   onPressBack,
+  extraStyle,
 }: appBarInterface) => {
   const navigation = useNavigation<any>();
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, extraStyle]}>
       <View style={styles.titleWrapper}>
         {back && (
           <AntDesign

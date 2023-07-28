@@ -6,6 +6,7 @@ import {
   ScrollView,
   NativeScrollEvent,
   Pressable,
+  Alert,
 } from 'react-native';
 import React, {
   useRef,
@@ -27,18 +28,29 @@ import Animated, {
 } from 'react-native-reanimated';
 import ChatComp from '../components/ChatComp';
 import {
+  DeleteComp,
   EmptyInfoComp,
   PositionButton,
   ShowMoreComp,
   SizedBox,
 } from '../components/Reuseable';
 import {AntDesign, MaterialIcons} from '../utils/IconExport';
-import {getUserData, updateSeenStatus} from '../firebase/fbFireStore';
+import {
+  deleteGroupFromFb,
+  deleteMessageChat,
+  getUserData,
+  updateSeenStatus,
+} from '../firebase/fbFireStore';
 import {AppContext} from '../context/AppContext';
 import LoadingScreen from './LoadingScreen';
 import {chatInterface, groupChatInterface} from '../utils/interfaceExports';
 import getRealtimeChats from '../firebase/RealTimeChats';
 import getGroupsChats from '../firebase/GetGroupsChats';
+import {
+  goToGroupChat,
+  onLongPreesOnChat,
+  onPreesOnChat,
+} from '../features/HomePageFunctions';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -50,11 +62,14 @@ const Home = () => {
   const chats = getRealtimeChats();
   const groupChats = getGroupsChats();
   const {user} = useContext(AppContext);
+  const [selectedSingleChat, setSelectedSingleChat] = useState<Array<string>>(
+    [],
+  );
+  const [selectedGroupChat, setSelectedGroupChat] = useState<Array<string>>([]);
 
   // onScrollEvent function
   const onScrollEvent = useAnimatedScrollHandler({
     onScroll: (event: NativeScrollEvent) => {
-      // console.log(event.contentOffset.x);
       translateX.value = event.contentOffset.x;
     },
   });
@@ -73,39 +88,19 @@ const Home = () => {
     return Math.round(translateX.value / WIDTH);
   });
 
-  // toggle show more
-  const toggleShowMore = () => {
-    setShowMore(!showMore);
-  };
-
-  // onprees on chat
-  const onPreesOnChat = (chat: chatInterface) => {
-    if (chat.newMessage) {
-      console.log(chat.newMessage);
-      updateSeenStatus(user.uid, chat.chatterId);
+  const deleteChats = (text: string) => {
+    if (text == 'chat') {
+      for (const id of selectedSingleChat) {
+        deleteMessageChat(user?.uid, id);
+      }
+      setSelectedSingleChat([]);
+    } else {
+      for (const id of selectedGroupChat) {
+        deleteGroupFromFb(id);
+      }
+      setSelectedGroupChat([]);
     }
-    navigation.navigate('MessageScreen', {
-      isGroupChat: false,
-      profilePic: chat.chatterProfilePic,
-      name: chat.chatterName,
-      chatId: chat.chatterId,
-    });
   };
-
-  const goToGroupChat = (group: groupChatInterface) => {
-    if (group.newMessage) {
-      // console.log(chat.newMessage);
-      // updateSeenStatus(user.uid, chat.chatterId);
-    }
-    navigation.navigate('MessageScreen', {
-      isGroupChat: true,
-      profilePic: group.groupProfilePic,
-      name: group.groupName,
-      chatId: group.groupId,
-    });
-  };
-  // onLongprees on chat
-  const onLongPreesOnChat = (text: string) => {};
 
   // get data on first render
   useEffect(() => {
@@ -129,8 +124,32 @@ const Home = () => {
         backgroundColor={AppColors.GREY_BLACK}
         barStyle={'light-content'}
       />
+
+      {/* when selected Chat */}
+      <DeleteComp
+        info="Delete Chat"
+        onPress={() => deleteChats('chat')}
+        onPressBack={() => {
+          setSelectedSingleChat([]);
+        }}
+        selectedChat={selectedSingleChat.length > 0 ? true : false}
+      />
+
+      {/* when select group chat */}
+      <DeleteComp
+        info="Delete Group Chat"
+        onPress={() => deleteChats('group')}
+        onPressBack={() => {
+          setSelectedGroupChat([]);
+        }}
+        selectedChat={selectedGroupChat.length > 0 ? true : false}
+      />
       {/* topappBar */}
-      <TopAppBar text="Chatapp" back={false} onPressonMore={toggleShowMore} />
+      <TopAppBar
+        text="Chatapp"
+        back={false}
+        onPressonMore={() => setShowMore(!showMore)}
+      />
 
       {/* show more buttons */}
       {showMore && (
@@ -174,12 +193,25 @@ const Home = () => {
               <ScrollView style={styles.tabScrollStyle}>
                 {chats.map((chat: chatInterface) => (
                   <ChatComp
+                    isSelected={selectedSingleChat.includes(chat.chatterId)}
                     key={chat.chatterId}
                     profilePic={chat.chatterProfilePic}
                     username={chat.chatterName}
                     lastMsg={chat.media ? 'Photo' : chat.lastMsg}
-                    onLongPress={() => onLongPreesOnChat('singleChat')}
-                    onPress={() => onPreesOnChat(chat)}
+                    onLongPress={() =>
+                      onLongPreesOnChat(
+                        'singleChat',
+                        chat.chatterId,
+                        selectedGroupChat,
+                        selectedSingleChat,
+                        setSelectedSingleChat,
+                        setSelectedGroupChat,
+                      )
+                    }
+                    onPress={() => {
+                      if (selectedSingleChat.includes(chat.chatterId)) return;
+                      onPreesOnChat(chat, user, navigation);
+                    }}
                     newMessage={chat.newMessage}
                   />
                 ))}
@@ -208,6 +240,7 @@ const Home = () => {
                 {groupChats.map((group: groupChatInterface) => (
                   <ChatComp
                     key={group.groupId}
+                    isSelected={selectedGroupChat.includes(group.groupId)}
                     profilePic={group.groupProfilePic}
                     username={group.groupName}
                     lastMsg={
@@ -217,8 +250,25 @@ const Home = () => {
                         ? 'welcome new Group'
                         : group.lastMsg
                     }
-                    onLongPress={() => {}}
-                    onPress={() => goToGroupChat(group)}
+                    onLongPress={() => {
+                      if (user?.uid != group.adminDetails.uid) {
+                        return Alert.alert(
+                          "You Can't Delete The group! You are not admin",
+                        );
+                      }
+                      onLongPreesOnChat(
+                        'groupChat',
+                        group.groupId,
+                        selectedGroupChat,
+                        selectedSingleChat,
+                        setSelectedSingleChat,
+                        setSelectedGroupChat,
+                      );
+                    }}
+                    onPress={() => {
+                      if (selectedGroupChat.includes(group.groupId)) return;
+                      goToGroupChat(group, navigation);
+                    }}
                     newMessage={
                       group.newMessage && group.senderId != user?.uid
                         ? true

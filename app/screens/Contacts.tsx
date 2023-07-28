@@ -42,7 +42,7 @@ const Contacts = ({route}: contactInterface) => {
       const isExist = selectedMembers.includes(contact);
       if (isExist) {
         setSelectedMember(
-          selectedMembers.filter(member => member.uid != contact.uid),
+          selectedMembers.filter((member: any) => member.uid != contact.uid),
         );
         setMemberIds(memberIds.filter(id => id != contact.uid));
       } else {
@@ -91,7 +91,7 @@ const Contacts = ({route}: contactInterface) => {
       {/* selected Members  */}
       {selectedMembers.length > 0 && (
         <View style={styles.memberContainer}>
-          {selectedMembers.map((member, index) => (
+          {selectedMembers.map((member: any, index: number) => (
             <Image
               key={index}
               source={{uri: member.profilePic}}

@@ -124,19 +124,19 @@ const styles = StyleSheet.create({
   friendMsgSide: {alignItems: 'flex-start', textAlign: 'left'},
 
   meSideBorderCurver: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 10,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 5,
   },
   friendSideBorderCurver: {
-    borderTopLeftRadius: 15,
+    borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    borderBottomRightRadius: 5,
   },
 
   imgFlexContainer: {
     width: '70%',
-    height: 300,
+    height: 280,
     backgroundColor: AppColors.GREY_BLACK,
     padding: 10,
     flexDirection: 'column',
