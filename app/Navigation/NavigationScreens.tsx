@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Register from '../screens/auth/Register';
 import Login from '../screens/auth/Login';
 import auth from '@react-native-firebase/auth';
-import Home from '../screens/Home';
+import Home from '../screens/home/Home';
 import LoadingScreen from '../screens/LoadingScreen';
 import Contacts from '../screens/Contacts';
 import Profile from '../screens/Profile';
