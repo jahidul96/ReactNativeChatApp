@@ -18,6 +18,7 @@ import getGroupsChats from '../../firebase/GetGroupsChats';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import ChatTab from './ChatTab';
 import GroupTab from './GroupTab';
+import AlertModal from '../../components/AlertModal';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -36,6 +37,8 @@ const Home = () => {
     [],
   );
   const [selectedGroupChat, setSelectedGroupChat] = useState<Array<string>>([]);
+  const [confirmChatDelete, setConfirmChatDelete] = useState(false);
+  const [groupDeleteConfirmation, setGroupDeleteConfirmation] = useState(false);
 
   // renderTabbar
   const renderTabBar = (props: any) => (
@@ -82,16 +85,27 @@ const Home = () => {
     ),
   });
 
-  const deleteChats = (text: string) => {
+  const confirmationCall = (text: string) => {
+    if (text == 'chat') {
+      setConfirmChatDelete(true);
+    } else {
+      setGroupDeleteConfirmation(true);
+    }
+  };
+
+  // confirmationCall
+  const deletChat = (text: string) => {
     if (text == 'chat') {
       for (const id of selectedSingleChat) {
         deleteMessageChat(user?.uid, id);
       }
+      setConfirmChatDelete(false);
       setSelectedSingleChat([]);
     } else {
       for (const id of selectedGroupChat) {
         deleteGroupFromFb(id);
       }
+      setGroupDeleteConfirmation(false);
       setSelectedGroupChat([]);
     }
   };
@@ -122,21 +136,37 @@ const Home = () => {
       {/* when selected Chat */}
       <DeleteComp
         info="Delete Chat"
-        onPress={() => deleteChats('chat')}
+        onPress={() => confirmationCall('chat')}
         onPressBack={() => {
           setSelectedSingleChat([]);
         }}
         selectedChat={selectedSingleChat.length > 0 ? true : false}
       />
 
+      {/* delete chat modal */}
+      <AlertModal
+        infoText="Selected Chat Will be deleted"
+        onPressOk={() => deletChat('chat')}
+        setVisiable={setConfirmChatDelete}
+        visible={confirmChatDelete}
+      />
+
       {/* when select group chat */}
       <DeleteComp
         info="Delete Group Chat"
-        onPress={() => deleteChats('group')}
+        onPress={() => confirmationCall('group')}
         onPressBack={() => {
           setSelectedGroupChat([]);
         }}
         selectedChat={selectedGroupChat.length > 0 ? true : false}
+      />
+
+      {/* delete chat modal */}
+      <AlertModal
+        infoText="Selected group will be deleted"
+        onPressOk={() => deletChat('group')}
+        setVisiable={setGroupDeleteConfirmation}
+        visible={groupDeleteConfirmation}
       />
       {/* topappBar */}
       <TopAppBar
