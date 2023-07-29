@@ -1,5 +1,5 @@
 import {useAnimatedScrollHandler} from 'react-native-reanimated';
-import {updateSeenStatus} from '../firebase/fbFireStore';
+import {updateGroupInfo, updateSeenStatus} from '../firebase/fbFireStore';
 
 import {
   chatInterface,
@@ -26,10 +26,13 @@ export const onPreesOnChat = (
   });
 };
 
-export const goToGroupChat = (group: groupChatInterface, navigation: any) => {
-  if (group.newMessage) {
-    // console.log(chat.newMessage);
-    // updateSeenStatus(user.uid, chat.chatterId);
+export const goToGroupChat = (
+  group: groupChatInterface,
+  navigation: any,
+  user: userInterface,
+) => {
+  if (!group.seenBy.includes(user.uid)) {
+    updateGroupInfo(group.groupId, {seenBy: [user.uid]});
   }
   navigation.navigate('MessageScreen', {
     isGroupChat: true,

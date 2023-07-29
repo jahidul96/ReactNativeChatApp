@@ -11,8 +11,8 @@ import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {imgUri} from '../utils/FileExport';
 import RegularText from './RegularText';
 import {AppColors} from '../utils/AppColors';
-import {useNavigation} from '@react-navigation/native';
 import {AntDesign, Ionicons} from '../utils/IconExport';
+import moment from 'moment';
 
 interface chatInterface {
   isChat?: boolean;
@@ -23,6 +23,7 @@ interface chatInterface {
   lastMsg: string;
   newMessage?: boolean;
   isSelected?: boolean;
+  msgTime?: Date;
 }
 const ChatComp = ({
   isChat = true,
@@ -33,10 +34,14 @@ const ChatComp = ({
   profilePic,
   newMessage,
   isSelected = false,
+  msgTime,
 }: chatInterface) => {
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[
+        styles.container,
+        {backgroundColor: isSelected ? AppColors.GREY_BLACK : AppColors.BLACK},
+      ]}
       activeOpacity={0.8}
       onPress={onPress}
       onLongPress={onLongPress}>
@@ -55,7 +60,12 @@ const ChatComp = ({
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
           <RegularText text={username} />
-          {isChat && <RegularText text="1h" />}
+          {isChat && (
+            <RegularText
+              text={moment(msgTime).fromNow().toString()}
+              extraStyle={{fontSize: 12}}
+            />
+          )}
         </View>
         <View style={[styles.nameAndDateStyle, {marginTop: -10}]}>
           <View style={styles.photoIconWrapper}>
@@ -91,12 +101,13 @@ export default ChatComp;
 const styles = StyleSheet.create({
   container: {
     width: WIDTH,
-    height: 60,
+    minHeight: 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
+    paddingVertical: 10,
   },
 
   imgStyle: {

@@ -65,6 +65,7 @@ const CreateGroup = ({route}: groupInterFace) => {
     groupId: '',
     updatedAt: Date.now(),
     newMessage: false,
+    seenBy: [user.uid],
   };
 
   const createGroup = async () => {

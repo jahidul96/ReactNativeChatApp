@@ -60,4 +60,5 @@ export interface groupChatInterface {
   groupId: string;
   updatedAt: Date;
   newMessage: boolean;
+  seenBy: Array<string>;
 }

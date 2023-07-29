@@ -18,6 +18,7 @@ import getGroupsChats from '../../firebase/GetGroupsChats';
 import {AntDesign} from '../../utils/IconExport';
 import {AppColors} from '../../utils/AppColors';
 import LoadingScreen from '../LoadingScreen';
+import moment from 'moment';
 
 interface chatTabinterFace {
   groupChats: Array<groupChatInterface>;
@@ -54,6 +55,7 @@ const GroupTab = ({
                   isSelected={selectedGroupChat.includes(group.groupId)}
                   profilePic={group.groupProfilePic}
                   username={group.groupName}
+                  msgTime={group.updatedAt}
                   lastMsg={
                     group.media
                       ? 'Photo'
@@ -78,10 +80,11 @@ const GroupTab = ({
                   }}
                   onPress={() => {
                     if (selectedGroupChat.includes(group.groupId)) return;
-                    goToGroupChat(group, navigation);
+                    goToGroupChat(group, navigation, user);
                   }}
                   newMessage={
-                    group.newMessage && group.senderId != user?.uid
+                    group.senderId != user?.uid &&
+                    !group.seenBy.includes(user?.uid)
                       ? true
                       : false
                   }
@@ -110,6 +113,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabScrollStyle: {
-    paddingTop: 15,
+    paddingTop: 5,
   },
 });

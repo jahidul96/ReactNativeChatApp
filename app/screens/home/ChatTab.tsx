@@ -53,6 +53,7 @@ const ChatTab = ({
                   key={chat.chatterId}
                   profilePic={chat.chatterProfilePic}
                   username={chat.chatterName}
+                  msgTime={chat.updatedAt}
                   lastMsg={chat.media ? 'Photo' : chat.lastMsg}
                   onLongPress={() =>
                     onLongPreesOnChat(
@@ -94,6 +95,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabScrollStyle: {
-    paddingTop: 15,
+    paddingTop: 5,
   },
 });

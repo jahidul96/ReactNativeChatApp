@@ -10,6 +10,15 @@ import LoadingScreen from './LoadingScreen';
 import {useNavigation} from '@react-navigation/native';
 import {AntDesign} from '../utils/IconExport';
 import {WIDTH} from '../utils/AppDimension';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
+import {
+  goToChatFromContact,
+  gotoAddGroupScreen,
+} from '../features/ContactScreenFuncs';
 
 interface contactInterface {
   route: {
@@ -28,45 +37,22 @@ const Contacts = ({route}: contactInterface) => {
     Array<userInterface | []>
   >([]);
   const [memberIds, setMemberIds] = useState<Array<string>>([]);
+  const heightValue = useSharedValue(0);
 
-  // onprees on chat
-  const onPreesOnChat = (contact: userInterface, isContact: boolean) => {
-    if (isContact) {
-      navigation.navigate('MessageScreen', {
-        isGroupChat: false,
-        profilePic: contact.profilePic,
-        name: contact.username,
-        chatId: contact.uid,
-      });
-    } else {
-      const isExist = selectedMembers.includes(contact);
-      if (isExist) {
-        setSelectedMember(
-          selectedMembers.filter((member: any) => member.uid != contact.uid),
-        );
-        setMemberIds(memberIds.filter(id => id != contact.uid));
-      } else {
-        if (selectedMembers.length >= 6) {
-          return Alert.alert('For now just 6 members');
-        }
-        setSelectedMember(prevState => [...prevState, contact]);
-        setMemberIds(prevState => [...prevState, contact.uid]);
-      }
-    }
-  };
+  useEffect(() => {
+    heightValue.value = selectedMembers.length > 0 ? 80 : 0;
+  }, [selectedMembers.length, heightValue]);
 
-  const gotoAddGroupScreen = () => {
-    if (selectedMembers.length == 0 && memberIds.length == 0) {
-      return Alert.alert('Add member first! Tap on Contact to select members');
-    }
-    if (selectedMembers.length < 2) {
-      return Alert.alert('for two person no need to create group');
-    }
-    navigation.navigate('CreateGroup', {
-      memberIds: memberIds,
-      selectedMembers: selectedMembers,
-    });
-  };
+  // memberContainerAnimStyle
+  const memberContainerAnimStyle = useAnimatedStyle(() => {
+    return {
+      height: withTiming(heightValue.value, {duration: 300}),
+      borderBottomWidth:
+        selectedMembers.length > 0
+          ? withTiming(1, {duration: 500})
+          : withTiming(0, {duration: 500}), // Adjust duration as needed
+    };
+  });
 
   useEffect(() => {
     getAllContacts()
@@ -88,18 +74,17 @@ const Contacts = ({route}: contactInterface) => {
         profie={isContact ? false : true}
       />
 
-      {/* selected Members  */}
-      {selectedMembers.length > 0 && (
-        <View style={styles.memberContainer}>
-          {selectedMembers.map((member: any, index: number) => (
-            <Image
-              key={index}
-              source={{uri: member.profilePic}}
-              style={styles.memberAvatorStyle}
-            />
-          ))}
-        </View>
-      )}
+      {/* if selected Members lenght exists  */}
+      <Animated.View style={[styles.memberContainer, memberContainerAnimStyle]}>
+        {selectedMembers.map((member: any, index: number) => (
+          <AnimatedProfile
+            key={index}
+            index={index}
+            profilePic={member.profilePic}
+            isAdded={memberIds.includes(member.uid)}
+          />
+        ))}
+      </Animated.View>
 
       {/* contacts render */}
       {loading ? (
@@ -116,7 +101,17 @@ const Contacts = ({route}: contactInterface) => {
                 username={contact.username}
                 lastMsg={contact.bio}
                 onLongPress={() => {}}
-                onPress={() => onPreesOnChat(contact, isContact)}
+                onPress={() =>
+                  goToChatFromContact(
+                    contact,
+                    isContact,
+                    navigation,
+                    selectedMembers,
+                    setSelectedMember,
+                    memberIds,
+                    setMemberIds,
+                  )
+                }
                 key={index}
                 isChat={false}
               />
@@ -129,7 +124,9 @@ const Contacts = ({route}: contactInterface) => {
 
       {/* create groupBtn */}
       <PositionButton
-        onPress={gotoAddGroupScreen}
+        onPress={() =>
+          gotoAddGroupScreen(selectedMembers, memberIds, navigation)
+        }
         children={
           <AntDesign name="arrowright" color={AppColors.WHITE} size={25} />
         }
@@ -139,6 +136,21 @@ const Contacts = ({route}: contactInterface) => {
 };
 
 export default Contacts;
+
+interface profieInterface {
+  profilePic: string;
+  index: number;
+  isAdded: boolean;
+}
+const AnimatedProfile = ({profilePic, index, isAdded}: profieInterface) => {
+  console.log(isAdded);
+  return (
+    <Animated.Image
+      source={{uri: profilePic}}
+      style={[styles.memberAvatorStyle]}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -154,7 +166,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     borderBottomColor: AppColors.GREY,
-    borderBottomWidth: 1,
   },
 
   memberAvatorStyle: {
