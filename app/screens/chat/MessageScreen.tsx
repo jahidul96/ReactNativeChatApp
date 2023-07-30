@@ -10,9 +10,10 @@ import {EmptyInfoComp, SizedBox} from '../../components/Reuseable';
 import {
   messageInterface,
   messageScreenParams,
+  userInterface,
 } from '../../utils/interfaceExports';
 import {AppContext} from '../../context/AppContext';
-import {oneToOneChatMessage} from '../../firebase/fbFireStore';
+import {getUserData, oneToOneChatMessage} from '../../firebase/fbFireStore';
 import getOneToOneMessages from '../../firebase/RealTimeOneToOneMessages';
 import LoadingScreen from '../LoadingScreen';
 import {useNavigation} from '@react-navigation/native';
@@ -35,16 +36,22 @@ const MessageScreen = ({route}: routeParams) => {
   const [text, setText] = useState('');
   const [showFileModal, setShowFileModal] = useState(false);
   const {user} = useContext(AppContext);
-  const {isGroupChat, profilePic, name, chatId} = route.params;
+  const {isGroupChat, profilePic, name, chatId, membersId} = route.params;
   const [loading, setLoading] = useState(true);
   const chatMessages = getOneToOneMessages(chatId);
   const groupMessages = getGroupMessages(chatId);
   const [showCamera, setShowCamera] = useState(false);
-  const [cameraTakenImage, setCameraTakenImage] = useState<string | null>();
   const [sendingPhotos, setSendingPhotos] = useState(false);
   const [gallery, setGallery] = useState(false);
   const [selectedImg, setSelectedImg] = useState<Array<string>>([]);
   const scrollRef = createRef<ScrollView>();
+  const [groupMemberRealtimeInfo, setGroupMemberRealtimeInfo] = useState<
+    Array<userInterface>
+  >([]);
+  const [signleChatUserRealtimeData, setSingleChatUserRealtimeData] =
+    useState<userInterface>();
+
+  // console.log('membersIds', membersId);
 
   const sendMessage = async (val: string) => {
     sendOneToOneMessage(
@@ -60,6 +67,8 @@ const MessageScreen = ({route}: routeParams) => {
       selectedImg,
       setSelectedImg,
       isGroupChat,
+      groupMemberRealtimeInfo!,
+      signleChatUserRealtimeData!,
     );
     setText('');
   };
@@ -88,7 +97,22 @@ const MessageScreen = ({route}: routeParams) => {
     }
   };
 
+  const getRealtimeUserInfo = async () => {
+    if (isGroupChat) {
+      let users = [];
+      for (const id of membersId) {
+        let user = await getUserData(id);
+        users.push(user.data());
+      }
+      setGroupMemberRealtimeInfo(users);
+    } else {
+      let user = await getUserData(chatId);
+      setSingleChatUserRealtimeData(user.data());
+    }
+  };
+
   useEffect(() => {
+    getRealtimeUserInfo();
     setTimeout(() => {
       setLoading(false);
     }, 1500);

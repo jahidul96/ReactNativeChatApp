@@ -123,14 +123,16 @@ const Contacts = ({route}: contactInterface) => {
       )}
 
       {/* create groupBtn */}
-      <PositionButton
-        onPress={() =>
-          gotoAddGroupScreen(selectedMembers, memberIds, navigation)
-        }
-        children={
-          <AntDesign name="arrowright" color={AppColors.WHITE} size={25} />
-        }
-      />
+      {!isContact && (
+        <PositionButton
+          onPress={() =>
+            gotoAddGroupScreen(selectedMembers, memberIds, navigation)
+          }
+          children={
+            <AntDesign name="arrowright" color={AppColors.WHITE} size={25} />
+          }
+        />
+      )}
     </View>
   );
 };

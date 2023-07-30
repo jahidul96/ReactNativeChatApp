@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import TopAppBar from '../../components/TopAppBar';
 import {AppColors} from '../../utils/AppColors';
 import {HEIGHT, WIDTH} from '../../utils/AppDimension';
-
+import auth from '@react-native-firebase/auth';
 import {DeleteComp, ShowMoreComp} from '../../components/Reuseable';
 import {
   deleteGroupFromFb,
@@ -23,6 +23,9 @@ import AlertModal from '../../components/AlertModal';
 const Home = () => {
   const navigation = useNavigation<any>();
   const [index, setIndex] = useState(0);
+  // const {pushToken} = useContext(AppContext);
+
+  // console.log('this is push token', pushToken);
   const [routes] = useState([
     {key: 'first', title: 'Chats'},
     {key: 'second', title: 'Groups'},
@@ -113,7 +116,7 @@ const Home = () => {
   // get data on first render
   useEffect(() => {
     // get userData
-    getUserData()
+    getUserData(auth().currentUser?.uid)
       .then(user => {
         setUser(user.data());
 

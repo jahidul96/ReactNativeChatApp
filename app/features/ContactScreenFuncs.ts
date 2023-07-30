@@ -43,9 +43,9 @@ export const gotoAddGroupScreen = (
   if (selectedMembers.length == 0 && memberIds.length == 0) {
     return Alert.alert('Add member first! Tap on Contact to select members');
   }
-  if (selectedMembers.length < 2) {
-    return Alert.alert('for two person no need to create group');
-  }
+  // if (selectedMembers.length < 2) {
+  //   return Alert.alert('for two person no need to create group');
+  // }
   navigation.navigate('CreateGroup', {
     memberIds: memberIds,
     selectedMembers: selectedMembers,

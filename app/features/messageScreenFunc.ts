@@ -6,8 +6,10 @@ import {
   oneToOneChatMessage,
   updateGroupInfo,
 } from '../firebase/fbFireStore';
+import axios from 'axios';
+import {userInterface} from '../utils/interfaceExports';
 
-export const lanunchUserCamera = async setValue => {
+export const lanunchUserCamera = async (setValue: any) => {
   try {
     const result = await launchCamera({mediaType: 'photo', cameraType: 'back'});
     if (result.didCancel) {
@@ -16,7 +18,7 @@ export const lanunchUserCamera = async setValue => {
     }
 
     return result.assets[0].uri;
-  } catch (error) {
+  } catch (error: any) {
     setValue(false);
     Alert.alert(error.message);
     console.log(error.message);
@@ -24,18 +26,20 @@ export const lanunchUserCamera = async setValue => {
 };
 
 export const sendOneToOneMessage = async (
-  val,
-  text,
-  user,
-  name,
-  chatId,
-  profilePic,
-  setShowCamera,
-  setSendingPhotos,
-  setGallery,
-  selectedImg,
-  setSelectedImg,
-  isGroupChat,
+  val: string,
+  text: string,
+  user: userInterface,
+  name: string,
+  chatId: string,
+  profilePic: string,
+  setShowCamera: any,
+  setSendingPhotos: any,
+  setGallery: any,
+  selectedImg: Array<string>,
+  setSelectedImg: any,
+  isGroupChat: boolean,
+  groupMemberRealtimeInfo: Array<userInterface>,
+  signleChatUserRealtimeData: userInterface,
 ) => {
   let messageData = {
     text: text,
@@ -88,6 +92,14 @@ export const sendOneToOneMessage = async (
       updateGroupData.media = true;
       addMessageToGroup(chatId, messageData);
       updateGroupInfo(chatId, updateGroupData);
+      // sending pushNotificationto users
+      for (const member of groupMemberRealtimeInfo) {
+        SendPushNotificationToTheUser(
+          member?.pushToken,
+          `sent ${selectedImg.length.toString()} photo`,
+          user.profilePic,
+        );
+      }
     } else {
       oneToOneChatMessage(
         text,
@@ -97,6 +109,13 @@ export const sendOneToOneMessage = async (
         user,
         messageData,
         true,
+      );
+
+      // sending pushNotificationto user
+      SendPushNotificationToTheUser(
+        signleChatUserRealtimeData?.pushToken,
+        `sent ${selectedImg.length.toString()} photo`,
+        user.profilePic,
       );
     }
 
@@ -112,6 +131,11 @@ export const sendOneToOneMessage = async (
     if (isGroupChat) {
       addMessageToGroup(chatId, messageData);
       updateGroupInfo(chatId, updateGroupData);
+
+      // sending pushNotificationto users
+      for (const member of groupMemberRealtimeInfo) {
+        SendPushNotificationToTheUser(member?.pushToken, text, user.profilePic);
+      }
     } else {
       oneToOneChatMessage(
         text,
@@ -122,6 +146,47 @@ export const sendOneToOneMessage = async (
         messageData,
         false,
       );
+      // sending pushNotificationto user
+      SendPushNotificationToTheUser(
+        signleChatUserRealtimeData?.pushToken,
+        text,
+        user.profilePic,
+      );
     }
   }
+};
+
+const SendPushNotificationToTheUser = (
+  userToken: string,
+  text: string,
+  profilePic: string,
+) => {
+  let serverKey =
+    'AAAAT1Vod54:APA91bFlfCnwUj5vy-aworW_CTdHVTO-dI5gKTo-w1LCVwuRTvrApOnOpsZLyGY1Z-ti2JL1ygH8LEiMka95T0MMjbUolrk8yUdvZIK-7Tok-lj9TeAAoY62NmdAkR2Y2ljgNi3h2q5z';
+  let payload = JSON.stringify({
+    to: userToken,
+    data: {
+      title: 'ChatApp',
+      body: text,
+      image: profilePic,
+    },
+    priority: 'high',
+    contentAvailable: true,
+  });
+
+  let config = {
+    method: 'post',
+    url: 'https://fcm.googleapis.com/fcm/send',
+    headers: {
+      Authorization: `key=${serverKey}`,
+      'Content-Type': 'application/json',
+    },
+    data: payload,
+  };
+
+  axios(config)
+    .then(val => {
+      console.log('succes');
+    })
+    .catch(err => console.log(err.message));
 };

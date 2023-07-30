@@ -23,6 +23,7 @@ export interface messageScreenParams {
   profilePic: string;
   name: string;
   chatId: string;
+  membersId: Array<string>;
 }
 
 export interface messageInterface {

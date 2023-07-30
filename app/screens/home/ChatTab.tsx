@@ -66,7 +66,14 @@ const ChatTab = ({
                     )
                   }
                   onPress={() => {
-                    if (selectedSingleChat.includes(chat.chatterId)) return;
+                    if (selectedSingleChat.includes(chat.chatterId)) {
+                      setSelectedSingleChat(
+                        selectedSingleChat.filter(
+                          sChat => sChat != chat.chatterId,
+                        ),
+                      );
+                      return;
+                    }
                     onPreesOnChat(chat, user, navigation);
                   }}
                   newMessage={chat.newMessage}

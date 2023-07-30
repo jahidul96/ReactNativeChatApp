@@ -1,10 +1,12 @@
 import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {AppColors} from '../../utils/AppColors';
 import {messageInterface} from '../../utils/interfaceExports';
 import {AppContext} from '../../context/AppContext';
 import {AntDesign} from '../../utils/IconExport';
 import {useNavigation} from '@react-navigation/native';
+import RegularText from '../../components/RegularText';
+import moment from 'moment';
 
 interface messageCompInterface {
   message: messageInterface;
@@ -12,6 +14,7 @@ interface messageCompInterface {
 }
 
 const MessageComp = ({message, isGroupChat}: messageCompInterface) => {
+  const [seeMsgTime, setSeeMsgTime] = useState(false);
   const {user} = useContext(AppContext);
   const navigation = useNavigation<any>();
 
@@ -74,16 +77,33 @@ const MessageComp = ({message, isGroupChat}: messageCompInterface) => {
           </Pressable>
         ) : (
           // text show
-          <Text
-            style={[
-              styles.msgTextStyle,
-              {
-                backgroundColor: msgBG,
-              },
-              borderCurveStyle,
-            ]}>
-            {message.text}
-          </Text>
+          <View>
+            <Pressable
+              onPress={() => setSeeMsgTime(!seeMsgTime)}
+              style={[
+                styles.msgTextWrapper,
+                {
+                  backgroundColor: msgBG,
+                },
+                borderCurveStyle,
+              ]}>
+              <RegularText text={message.text} extraStyle={styles.textStyle} />
+            </Pressable>
+            {seeMsgTime && (
+              <Text
+                style={[
+                  styles.timeStyle,
+                  {
+                    alignSelf:
+                      message.senderDetails.uid == user.uid
+                        ? 'flex-end'
+                        : 'flex-start',
+                  },
+                ]}>
+                {moment(message.createdAt).fromNow().toString()}
+              </Text>
+            )}
+          </View>
         )}
       </View>
     </View>
@@ -112,12 +132,19 @@ const styles = StyleSheet.create({
     borderColor: AppColors.WHITE,
     marginRight: 10,
   },
-  msgTextStyle: {
-    fontSize: 15,
+  msgTextWrapper: {
     paddingHorizontal: 13,
     paddingVertical: 7,
     minWidth: '10%',
     maxWidth: '100%',
+  },
+  textStyle: {
+    color: AppColors.WHITE,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  timeStyle: {
+    fontSize: 12,
     color: AppColors.WHITE,
   },
   myMsgSide: {alignItems: 'flex-end'},

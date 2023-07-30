@@ -41,6 +41,7 @@ const Login = () => {
         });
     }, 2000);
   };
+
   return (
     <View style={styles.container}>
       {/* <TouchableOpacity

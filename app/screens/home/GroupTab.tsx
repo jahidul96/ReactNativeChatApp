@@ -79,7 +79,14 @@ const GroupTab = ({
                     );
                   }}
                   onPress={() => {
-                    if (selectedGroupChat.includes(group.groupId)) return;
+                    if (selectedGroupChat.includes(group.groupId)) {
+                      setSelectedGroupChat(
+                        selectedGroupChat.filter(
+                          sgChat => sgChat != group.groupId,
+                        ),
+                      );
+                      return;
+                    }
                     goToGroupChat(group, navigation, user);
                   }}
                   newMessage={

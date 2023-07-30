@@ -18,11 +18,11 @@ export const addUserToFb = (data, userId) => {
   });
 };
 
-export const getUserData = () => {
+export const getUserData = userId => {
   return new Promise((resolve, reject) => {
     firestore()
       .collection('Users')
-      .doc(auth().currentUser.uid)
+      .doc(userId)
       .get()
       .then(documentSnapshot => {
         if (documentSnapshot.exists) {

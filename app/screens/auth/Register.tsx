@@ -2,13 +2,12 @@ import {
   Alert,
   StatusBar,
   StyleSheet,
-  Text,
   View,
   ActivityIndicator,
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import {AppColors} from '../../utils/AppColors';
@@ -20,6 +19,8 @@ import {useNavigation} from '@react-navigation/native';
 import {fbUserRegister} from '../../firebase/fbAuth';
 import {addUserToFb} from '../../firebase/fbFireStore';
 import {uploadFilesToBucket} from '../../firebase/fbStorage';
+import {AppContext} from '../../context/AppContext';
+import {getFcmToken} from '../../features/notificationServices';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -28,6 +29,8 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
   const [image, setImage] = useState<string | null>();
+  const {setPushToken} = useContext(AppContext);
+  const [token, setToken] = useState('');
 
   const userData = {
     email,
@@ -63,6 +66,7 @@ const Register = () => {
     // uploading image to firebase bucket
     let url = await uploadFilesToBucket(image, filePath);
     userData.profilePic = url;
+    userData.pushToken = token;
 
     // register user
     fbUserRegister(email, password)
@@ -84,6 +88,15 @@ const Register = () => {
         console.log(error.message);
       });
   };
+
+  useEffect(() => {
+    getFcmToken()
+      .then(val => {
+        setToken(val);
+        setPushToken(val);
+      })
+      .catch(err => console.log(err.message));
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar
