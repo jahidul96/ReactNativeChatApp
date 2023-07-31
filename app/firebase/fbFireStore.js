@@ -35,6 +35,10 @@ export const getUserData = userId => {
   });
 };
 
+export const updateUserData = (data, userId) => {
+  firestore().collection('Users').doc(userId).update(data);
+};
+
 export const getAllContacts = () => {
   return new Promise((resolve, reject) => {
     firestore()

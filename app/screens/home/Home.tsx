@@ -10,6 +10,7 @@ import {
   deleteGroupFromFb,
   deleteMessageChat,
   getUserData,
+  updateUserData,
 } from '../../firebase/fbFireStore';
 import {AppContext} from '../../context/AppContext';
 import getRealtimeChats from '../../firebase/RealTimeChats';
@@ -19,6 +20,7 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import ChatTab from './ChatTab';
 import GroupTab from './GroupTab';
 import AlertModal from '../../components/AlertModal';
+import {getFcmToken} from '../../features/notificationServices';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -118,7 +120,12 @@ const Home = () => {
     // get userData
     getUserData(auth().currentUser?.uid)
       .then(user => {
+        // get user Data
         setUser(user.data());
+        // update userToken
+        getFcmToken().then(token => {
+          updateUserData({pushToken: token}, auth().currentUser?.uid);
+        });
 
         setTimeout(() => {
           setLoading(false);

@@ -10,8 +10,8 @@ import {
 import React from 'react';
 import RegularText from '../../components/RegularText';
 import {AppColors} from '../../utils/AppColors';
-import {Ionicons} from '../../utils/IconExport';
-import {WIDTH} from '../../utils/AppDimension';
+import {AntDesign, Ionicons} from '../../utils/IconExport';
+import {HEIGHT, WIDTH} from '../../utils/AppDimension';
 
 interface mediaSendInterface {
   name: string;
@@ -28,11 +28,41 @@ export const MediaSendFooter = ({name, onPress}: mediaSendInterface) => (
   </View>
 );
 
-export const PhotoPlacehoderComp = () => (
+interface photosInterFace {
+  photos: Array<string>;
+}
+export const PhotoPlacehoderComp = ({photos}: photosInterFace) => (
   <View style={styles.phPlaceholderContainer}>
-    <View style={[styles.imgWrapper]}>
-      <ActivityIndicator color={AppColors.WHITE} />
+    <View
+      style={[
+        styles.imgContainer,
+        photos.length == 2 && styles.imgFlexContainer,
+        photos.length >= 3 && styles.gridImgStyle,
+      ]}>
+      {photos.map((url, index, arr) => (
+        <View
+          key={index}
+          style={[
+            styles.imgContainer,
+            arr.length == 2 && styles.twoImgContainerStye,
+            arr.length >= 3 && styles.thereeImgContainerStye,
+          ]}>
+          <Image source={{uri: url}} style={[styles.imgStyle]} />
+        </View>
+      ))}
     </View>
+
+    <ActivityIndicator
+      color={AppColors.WHITE}
+      size={'large'}
+      style={styles.loadderStyle}
+    />
+
+    {photos.length >= 3 && (
+      <View style={styles.imgDeatilsPositionBtnStyle}>
+        <AntDesign name="pluscircle" color={AppColors.WHITE} size={45} />
+      </View>
+    )}
   </View>
 );
 
@@ -63,18 +93,66 @@ const styles = StyleSheet.create({
   },
 
   phPlaceholderContainer: {
-    width: '100%',
-    alignItems: 'flex-end',
-    marginBottom: 8,
-    paddingHorizontal: 10,
-  },
-
-  imgWrapper: {
-    width: '70%',
-    height: 200,
+    width: '75%',
+    height: HEIGHT / 2,
     backgroundColor: AppColors.GREY_BLACK,
-    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 6,
+    padding: 10,
+    alignSelf: 'flex-end',
+  },
+
+  imgFlexContainer: {
+    flex: 1,
+    gap: 8,
+    marginBottom: 5,
+  },
+  gridImgStyle: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+  },
+
+  threeImgFlexContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+  },
+
+  imgContainer: {
+    width: '100%',
+    height: '100%',
+  },
+  twoImgContainerStye: {
+    width: '100%',
+    height: '48%',
+  },
+  thereeImgContainerStye: {
+    width: '48%',
+    height: '48%',
+  },
+  imgStyle: {
+    flex: 1,
+    borderRadius: 5,
+    opacity: 0.7,
+  },
+  twoImgStyle: {
+    width: '50%',
+    height: '100%',
+  },
+
+  imgDeatilsPositionBtnStyle: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    width: '50%',
+    height: 140,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  loadderStyle: {
+    position: 'absolute',
   },
 });

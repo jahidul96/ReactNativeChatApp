@@ -24,6 +24,7 @@ export interface messageScreenParams {
   name: string;
   chatId: string;
   membersId: Array<string>;
+  adminDetails: userInterface;
 }
 
 export interface messageInterface {
@@ -62,4 +63,15 @@ export interface groupChatInterface {
   updatedAt: Date;
   newMessage: boolean;
   seenBy: Array<string>;
+}
+
+export interface chatDetailsScreenParams {
+  isGroupChat: boolean;
+  memberDetails: Array<userInterface>;
+  memberIds: Array<string>;
+  chatDetails: userInterface;
+  groupImage: string;
+  groupName: string;
+  chatMedia: Array<messageInterface>;
+  adminDetails: userInterface;
 }

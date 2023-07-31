@@ -7,6 +7,7 @@ import {AntDesign} from '../../utils/IconExport';
 import {useNavigation} from '@react-navigation/native';
 import RegularText from '../../components/RegularText';
 import moment from 'moment';
+import {HEIGHT} from '../../utils/AppDimension';
 
 interface messageCompInterface {
   message: messageInterface;
@@ -35,74 +36,73 @@ const MessageComp = ({message, isGroupChat}: messageCompInterface) => {
   return (
     <View style={[styles.messageContainer, msgSideStyle]}>
       <View style={[styles.messageFlexContainer]}>
-        {isGroupChat && message.senderDetails.uid != user.uid && (
+        {isGroupChat && message.senderDetails.uid != user.uid ? (
           <Image
             style={styles.profieImageStyle}
             source={{uri: message.senderDetails.profilePic}}
           />
+        ) : (
+          <View></View>
         )}
         {message.media && message.file.type == 'image' ? (
           // image show
-          <Pressable
-            style={[
-              styles.imgFlexContainer,
-              borderCurveStyle,
-              message.file.urls.length >= 3 && styles.threeImgFlexContainer,
-              {width: isGroupChat ? '80%' : '90%'},
-            ]}
-            onPress={() =>
-              navigation.navigate('ImageSlider', {images: message.file.urls})
-            }>
-            {message.file.urls.map((url, index, arr) => (
-              <View
-                key={index}
-                style={[
-                  styles.imgContainer,
-                  arr.length == 2 && styles.twoImgContainerStye,
-                  arr.length >= 3 && styles.thereeImgContainerStye,
-                ]}>
-                <Image source={{uri: url}} style={[styles.imgStyle]} />
-              </View>
-            ))}
+          <View style={styles.imgContentWrapper}>
+            <Pressable
+              style={[
+                styles.imgFlexContainer,
+                borderCurveStyle,
+                message.file.urls.length >= 3 && styles.threeImgFlexContainer,
+                {width: '90%'},
+              ]}
+              onPress={() =>
+                navigation.navigate('ImageSlider', {images: message.file.urls})
+              }>
+              {message.file.urls.map((url, index, arr) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.imgContainer,
+                    arr.length == 2 && styles.twoImgContainerStye,
+                    arr.length >= 3 && styles.thereeImgContainerStye,
+                  ]}>
+                  <Image source={{uri: url}} style={[styles.imgStyle]} />
+                </View>
+              ))}
 
-            {message.file.urls.length >= 3 && (
-              <View style={styles.imgDeatilsPositionBtnStyle}>
-                <AntDesign
-                  name="pluscircle"
-                  color={AppColors.WHITE}
-                  size={45}
-                />
-              </View>
-            )}
-          </Pressable>
+              {message.file.urls.length >= 3 && (
+                <View style={styles.imgDeatilsPositionBtnStyle}>
+                  <AntDesign
+                    name="pluscircle"
+                    color={AppColors.WHITE}
+                    size={45}
+                  />
+                </View>
+              )}
+            </Pressable>
+            <RegularText
+              extraStyle={styles.timeStyle}
+              text={moment(message.createdAt).format('h:m a').toString()}
+            />
+          </View>
         ) : (
           // text show
-          <View>
+          <View
+            style={[
+              styles.timeAndTextWrapper,
+              {
+                backgroundColor: msgBG,
+              },
+              borderCurveStyle,
+            ]}>
             <Pressable
               onPress={() => setSeeMsgTime(!seeMsgTime)}
-              style={[
-                styles.msgTextWrapper,
-                {
-                  backgroundColor: msgBG,
-                },
-                borderCurveStyle,
-              ]}>
+              style={[styles.msgTextWrapper]}>
               <RegularText text={message.text} extraStyle={styles.textStyle} />
             </Pressable>
-            {seeMsgTime && (
-              <Text
-                style={[
-                  styles.timeStyle,
-                  {
-                    alignSelf:
-                      message.senderDetails.uid == user.uid
-                        ? 'flex-end'
-                        : 'flex-start',
-                  },
-                ]}>
-                {moment(message.createdAt).fromNow().toString()}
-              </Text>
-            )}
+            <RegularText
+              extraStyle={styles.timeStyle}
+              text={moment(message.createdAt).format('h:m a').toString()}
+            />
           </View>
         )}
       </View>
@@ -132,11 +132,14 @@ const styles = StyleSheet.create({
     borderColor: AppColors.WHITE,
     marginRight: 10,
   },
-  msgTextWrapper: {
-    paddingHorizontal: 13,
+  timeAndTextWrapper: {
     paddingVertical: 7,
-    minWidth: '10%',
+    minWidth: '22%',
     maxWidth: '100%',
+  },
+  msgTextWrapper: {
+    maxWidth: '100%',
+    paddingHorizontal: 10,
   },
   textStyle: {
     color: AppColors.WHITE,
@@ -144,8 +147,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   timeStyle: {
-    fontSize: 12,
+    fontSize: 10,
     color: AppColors.WHITE,
+    paddingRight: 5,
+    alignSelf: 'flex-end',
   },
   myMsgSide: {alignItems: 'flex-end'},
   friendMsgSide: {alignItems: 'flex-start', textAlign: 'left'},
@@ -161,14 +166,20 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
   },
 
-  imgFlexContainer: {
-    width: '70%',
-    height: 280,
+  imgContentWrapper: {
+    width: '95%',
+    height: HEIGHT / 2,
     backgroundColor: AppColors.GREY_BLACK,
-    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    paddingVertical: 10,
+  },
+  imgFlexContainer: {
+    flex: 1,
     flexDirection: 'column',
-    // justifyContent: 'space-between',
     gap: 8,
+    marginBottom: 5,
   },
 
   threeImgFlexContainer: {

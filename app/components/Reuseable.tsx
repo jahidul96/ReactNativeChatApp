@@ -37,9 +37,10 @@ export const PositionButton = ({
 
 interface shoemoreInterface {
   onPrees: () => void;
+  extraStyle?: any;
 }
-export const ShowMoreComp = ({onPrees}: shoemoreInterface) => (
-  <View style={styles.showMoreContainer}>
+export const ShowMoreComp = ({onPrees, extraStyle}: shoemoreInterface) => (
+  <View style={[styles.showMoreContainer, extraStyle]}>
     <Pressable style={styles.showMoreBtn} onPress={onPrees}>
       <RegularText text="Profile" extraStyle={styles.showMoreBtnText} />
     </Pressable>
@@ -133,13 +134,14 @@ const styles = StyleSheet.create({
   showMoreContainer: {
     width: 150,
     height: 100,
-    backgroundColor: AppColors.WHITE,
+    backgroundColor: AppColors.GREY_BLACK,
     position: 'absolute',
     top: 50,
     right: 30,
     zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 3,
   },
 
   showMoreBtn: {
@@ -149,7 +151,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   showMoreBtnText: {
-    color: AppColors.BLACK,
     fontWeight: '700',
     fontSize: 17,
   },

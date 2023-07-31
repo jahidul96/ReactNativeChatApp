@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Pressable,
+} from 'react-native';
 import React from 'react';
 import {HEIGHT, WIDTH} from '../utils/AppDimension';
 import {AppColors} from '../utils/AppColors';
@@ -17,6 +24,7 @@ interface appBarInterface {
   profilePic?: string;
   onPressBack?: () => {};
   extraStyle?: any;
+  onPressDetails?: () => void;
 }
 const TopAppBar = ({
   text,
@@ -28,6 +36,7 @@ const TopAppBar = ({
   profilePic,
   onPressBack,
   extraStyle,
+  onPressDetails,
 }: appBarInterface) => {
   const navigation = useNavigation<any>();
   return (
@@ -44,16 +53,16 @@ const TopAppBar = ({
         )}
         {text && <RegularText text={text} extraStyle={styles.titleStyle} />}
         {message && (
-          <View style={styles.profileWrapper}>
+          <Pressable style={styles.profileWrapper} onPress={onPressDetails}>
             <Image
               source={{uri: profilePic ? profilePic : imgUri}}
               style={styles.profileImgStyle}
             />
             <View>
               <RegularText text={name!} extraStyle={styles.nameStyle} />
-              <RegularText text="online" extraStyle={styles.onlineStyle} />
+              <RegularText text="status" extraStyle={styles.onlineStyle} />
             </View>
-          </View>
+          </Pressable>
         )}
       </View>
 

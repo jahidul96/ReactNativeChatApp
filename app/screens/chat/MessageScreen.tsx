@@ -33,10 +33,12 @@ interface routeParams {
   };
 }
 const MessageScreen = ({route}: routeParams) => {
+  const navigation = useNavigation<any>();
   const [text, setText] = useState('');
   const [showFileModal, setShowFileModal] = useState(false);
   const {user} = useContext(AppContext);
-  const {isGroupChat, profilePic, name, chatId, membersId} = route.params;
+  const {isGroupChat, profilePic, name, chatId, membersId, adminDetails} =
+    route.params;
   const [loading, setLoading] = useState(true);
   const chatMessages = getOneToOneMessages(chatId);
   const groupMessages = getGroupMessages(chatId);
@@ -50,6 +52,7 @@ const MessageScreen = ({route}: routeParams) => {
   >([]);
   const [signleChatUserRealtimeData, setSingleChatUserRealtimeData] =
     useState<userInterface>();
+  const [showMoreBtn, setShowMoreBtn] = useState(false);
 
   // console.log('membersIds', membersId);
 
@@ -73,6 +76,29 @@ const MessageScreen = ({route}: routeParams) => {
     setText('');
   };
 
+  const gotoDetails = () => {
+    if (isGroupChat) {
+      navigation.navigate('ChatDetails', {
+        isGroupChat: isGroupChat,
+        memberDetails: groupMemberRealtimeInfo,
+        memberIds: membersId,
+        groupImage: profilePic,
+        groupName: name,
+        adminDetails: adminDetails,
+        chatMedia: groupMessages.filter(
+          (message: messageInterface) => message.file.urls.length !== 0,
+        ),
+      });
+    } else {
+      navigation.navigate('ChatDetails', {
+        isGroupChat: isGroupChat,
+        chatDetails: signleChatUserRealtimeData,
+        chatMedia: chatMessages.filter(
+          (message: messageInterface) => message.file.urls.length !== 0,
+        ),
+      });
+    }
+  };
   const onPressOnCameraIcon = async () => {
     setShowCamera(!showCamera);
     lanunchUserCamera(setShowCamera).then(result => {
@@ -121,7 +147,13 @@ const MessageScreen = ({route}: routeParams) => {
   return (
     <View style={styles.container}>
       {/* topAppBar */}
-      <TopAppBar back message name={name} profilePic={profilePic} />
+      <TopAppBar
+        back
+        message
+        name={name}
+        profilePic={profilePic}
+        onPressDetails={gotoDetails}
+      />
 
       {/* message section */}
       {loading ? (
@@ -159,7 +191,7 @@ const MessageScreen = ({route}: routeParams) => {
           )}
 
           {/* photoplaceHolder */}
-          {sendingPhotos && <PhotoPlacehoderComp />}
+          {sendingPhotos && <PhotoPlacehoderComp photos={selectedImg} />}
         </ScrollView>
       )}
 

@@ -24,6 +24,7 @@ interface chatInterface {
   newMessage?: boolean;
   isSelected?: boolean;
   msgTime?: Date;
+  isAdmin?: boolean;
 }
 const ChatComp = ({
   isChat = true,
@@ -35,6 +36,7 @@ const ChatComp = ({
   newMessage,
   isSelected = false,
   msgTime,
+  isAdmin = false,
 }: chatInterface) => {
   return (
     <TouchableOpacity
@@ -65,6 +67,9 @@ const ChatComp = ({
               text={moment(msgTime).fromNow().toString()}
               extraStyle={{fontSize: 12}}
             />
+          )}
+          {isAdmin && (
+            <RegularText text={'Admin'} extraStyle={{fontSize: 12}} />
           )}
         </View>
         <View style={[styles.nameAndDateStyle, {marginTop: -10}]}>

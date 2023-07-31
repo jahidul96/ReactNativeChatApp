@@ -70,18 +70,26 @@ const GalleryModal = ({
               text={`back`}
               onPressBack={() => setPreviewImages(!previewImages)}
             />
-            <FlatList
-              data={selectedImg}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => (
-                <View style={styles.sliderImgWrapper}>
-                  <Image source={{uri: item}} style={styles.sliderImgStyle} />
-                </View>
-              )}
-            />
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <View style={{width: WIDTH, height: 300}}>
+                <FlatList
+                  data={selectedImg}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item}) => (
+                    <View style={styles.sliderImgWrapper}>
+                      <Image
+                        source={{uri: item}}
+                        style={styles.sliderImgStyle}
+                      />
+                    </View>
+                  )}
+                />
+              </View>
+            </View>
           </View>
         ) : (
           <>
@@ -193,6 +201,7 @@ const styles = StyleSheet.create({
 
   prevSliderContainer: {
     flex: 1,
+    backgroundColor: AppColors.BLACK,
   },
   sliderImgWrapper: {
     width: WIDTH,

@@ -40,6 +40,7 @@ export const goToGroupChat = (
     name: group.groupName,
     chatId: group.groupId,
     membersId: group.memberIds.filter(id => id != user.uid),
+    adminDetails: group.adminDetails,
   });
 };
 

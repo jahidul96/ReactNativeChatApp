@@ -17,12 +17,6 @@ const AnimatedFileModal = ({
   // file modal anim style
   const fileModalAnimStyle = useAnimatedStyle(() => {
     return {
-      // opacity: showFileModal
-      //   ? withTiming(1, {duration: 500})
-      //   : withTiming(0, {duration: 500}),
-      // display: showFileModal
-      //   ? withTiming('flex', {duration: 500})
-      //   : withTiming('none', {duration: 500}),
       bottom: showFileModal
         ? withTiming(70, {duration: 500})
         : withTiming(-260, {duration: 500}),
@@ -58,15 +52,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     paddingVertical: 20,
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'center',
 
     left: 25,
     // zIndex: 999,
   },
   itemWrapper: {
+    width: '33%',
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',

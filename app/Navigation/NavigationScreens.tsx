@@ -12,6 +12,7 @@ import MessageScreen from '../screens/chat/MessageScreen';
 
 import ImageSlider from '../screens/chat/ImageSlider';
 import CreateGroup from '../screens/chat/CreateGroup';
+import ChatDetails from '../screens/chat/ChatDetails';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -50,6 +51,7 @@ const NavigationScreens = () => {
           component={ImageSlider}
           options={{animation: 'slide_from_bottom'}}
         />
+        <Stack.Screen name="ChatDetails" component={ChatDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
