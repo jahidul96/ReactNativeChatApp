@@ -39,8 +39,9 @@ export const goToGroupChat = (
     profilePic: group.groupProfilePic,
     name: group.groupName,
     chatId: group.groupId,
-    membersId: group.memberIds.filter(id => id != user.uid),
+    membersId: group.memberIds,
     adminDetails: group.adminDetails,
+    memberDetails: group.memberDetails,
   });
 };
 

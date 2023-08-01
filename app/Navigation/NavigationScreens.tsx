@@ -13,6 +13,8 @@ import MessageScreen from '../screens/chat/MessageScreen';
 import ImageSlider from '../screens/chat/ImageSlider';
 import CreateGroup from '../screens/chat/CreateGroup';
 import ChatDetails from '../screens/chat/ChatDetails';
+import AddNewGroupMember from '../screens/chat/AddNewGroupMember';
+import RemoveGroupMember from '../screens/chat/RemoveGroupMember';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -52,6 +54,8 @@ const NavigationScreens = () => {
           options={{animation: 'slide_from_bottom'}}
         />
         <Stack.Screen name="ChatDetails" component={ChatDetails} />
+        <Stack.Screen name="AddNewGroupMember" component={AddNewGroupMember} />
+        <Stack.Screen name="RemoveGroupMember" component={RemoveGroupMember} />
       </Stack.Navigator>
     </NavigationContainer>
   );

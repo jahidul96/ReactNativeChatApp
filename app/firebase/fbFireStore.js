@@ -59,6 +59,26 @@ export const getAllContacts = () => {
   });
 };
 
+export const getNotAddedContacts = userId => {
+  return new Promise((resolve, reject) => {
+    firestore()
+      .collection('Users')
+      .where('uid', '!=', userId)
+      .get()
+      .then(documentSnapshot => {
+        let userData = [];
+        documentSnapshot.docs.forEach(doc => {
+          userData.push(doc.data());
+        });
+
+        resolve(userData);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+};
+
 export const oneToOneChatMessage = (
   message,
   friendId,
@@ -170,6 +190,12 @@ export const createGroupInDb = groupData => {
         reject(err);
       });
   });
+};
+
+// get single grp info
+
+export const getGroupInfo = groupId => {
+  return new Promise((resolve, reject) => {});
 };
 
 // update grp info

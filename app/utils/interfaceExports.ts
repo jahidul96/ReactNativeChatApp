@@ -25,6 +25,7 @@ export interface messageScreenParams {
   chatId: string;
   membersId: Array<string>;
   adminDetails: userInterface;
+  memberDetails: Array<userInterface>;
 }
 
 export interface messageInterface {
@@ -74,4 +75,5 @@ export interface chatDetailsScreenParams {
   groupName: string;
   chatMedia: Array<messageInterface>;
   adminDetails: userInterface;
+  chatId: string;
 }

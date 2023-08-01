@@ -19,6 +19,7 @@ import {
   goToChatFromContact,
   gotoAddGroupScreen,
 } from '../features/ContactScreenFuncs';
+import AnimatedAddMember from '../components/AnimatedAddMember';
 
 interface contactInterface {
   route: {
@@ -33,26 +34,10 @@ const Contacts = ({route}: contactInterface) => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation<any>();
   const {isContact} = route.params;
-  const [selectedMembers, setSelectedMember] = useState<
-    Array<userInterface | []>
-  >([]);
+  const [selectedMembers, setSelectedMember] = useState<Array<userInterface>>(
+    [],
+  );
   const [memberIds, setMemberIds] = useState<Array<string>>([]);
-  const heightValue = useSharedValue(0);
-
-  useEffect(() => {
-    heightValue.value = selectedMembers.length > 0 ? 80 : 0;
-  }, [selectedMembers.length, heightValue]);
-
-  // memberContainerAnimStyle
-  const memberContainerAnimStyle = useAnimatedStyle(() => {
-    return {
-      height: withTiming(heightValue.value, {duration: 300}),
-      borderBottomWidth:
-        selectedMembers.length > 0
-          ? withTiming(1, {duration: 500})
-          : withTiming(0, {duration: 500}), // Adjust duration as needed
-    };
-  });
 
   useEffect(() => {
     getAllContacts()
@@ -75,16 +60,10 @@ const Contacts = ({route}: contactInterface) => {
       />
 
       {/* if selected Members lenght exists  */}
-      <Animated.View style={[styles.memberContainer, memberContainerAnimStyle]}>
-        {selectedMembers.map((member: any, index: number) => (
-          <AnimatedProfile
-            key={index}
-            index={index}
-            profilePic={member.profilePic}
-            isAdded={memberIds.includes(member.uid)}
-          />
-        ))}
-      </Animated.View>
+      <AnimatedAddMember
+        membersId={memberIds}
+        selectedMembers={selectedMembers!}
+      />
 
       {/* contacts render */}
       {loading ? (
@@ -139,43 +118,9 @@ const Contacts = ({route}: contactInterface) => {
 
 export default Contacts;
 
-interface profieInterface {
-  profilePic: string;
-  index: number;
-  isAdded: boolean;
-}
-const AnimatedProfile = ({profilePic, index, isAdded}: profieInterface) => {
-  console.log(isAdded);
-  return (
-    <Animated.Image
-      source={{uri: profilePic}}
-      style={[styles.memberAvatorStyle]}
-    />
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: AppColors.BLACK,
-  },
-
-  memberContainer: {
-    width: WIDTH,
-    height: 80,
-    backgroundColor: AppColors.BLACK,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    borderBottomColor: AppColors.GREY,
-  },
-
-  memberAvatorStyle: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: AppColors.WHITE,
-    marginRight: 6,
   },
 });

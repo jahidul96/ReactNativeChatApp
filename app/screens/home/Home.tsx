@@ -188,6 +188,7 @@ const Home = () => {
       {/* show more buttons */}
       {showMore && (
         <ShowMoreComp
+          btnText="Profile"
           onPrees={() => {
             setShowMore(!showMore);
             navigation.navigate('Profile');

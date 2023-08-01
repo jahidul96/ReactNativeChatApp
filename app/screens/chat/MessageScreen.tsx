@@ -6,7 +6,11 @@ import {AppColors} from '../../utils/AppColors';
 import AnimatedFileModal from '../../components/AnimatedFileModal';
 
 import MessageComp from './MessageComp';
-import {EmptyInfoComp, SizedBox} from '../../components/Reuseable';
+import {
+  EmptyInfoComp,
+  ShowMoreComp,
+  SizedBox,
+} from '../../components/Reuseable';
 import {
   messageInterface,
   messageScreenParams,
@@ -37,8 +41,15 @@ const MessageScreen = ({route}: routeParams) => {
   const [text, setText] = useState('');
   const [showFileModal, setShowFileModal] = useState(false);
   const {user} = useContext(AppContext);
-  const {isGroupChat, profilePic, name, chatId, membersId, adminDetails} =
-    route.params;
+  const {
+    isGroupChat,
+    profilePic,
+    name,
+    chatId,
+    membersId,
+    adminDetails,
+    memberDetails,
+  } = route.params;
   const [loading, setLoading] = useState(true);
   const chatMessages = getOneToOneMessages(chatId);
   const groupMessages = getGroupMessages(chatId);
@@ -80,7 +91,7 @@ const MessageScreen = ({route}: routeParams) => {
     if (isGroupChat) {
       navigation.navigate('ChatDetails', {
         isGroupChat: isGroupChat,
-        memberDetails: groupMemberRealtimeInfo,
+        memberDetails: memberDetails,
         memberIds: membersId,
         groupImage: profilePic,
         groupName: name,
@@ -88,6 +99,7 @@ const MessageScreen = ({route}: routeParams) => {
         chatMedia: groupMessages.filter(
           (message: messageInterface) => message.file.urls.length !== 0,
         ),
+        chatId: chatId,
       });
     } else {
       navigation.navigate('ChatDetails', {
@@ -96,6 +108,7 @@ const MessageScreen = ({route}: routeParams) => {
         chatMedia: chatMessages.filter(
           (message: messageInterface) => message.file.urls.length !== 0,
         ),
+        chatId: chatId,
       });
     }
   };
@@ -125,11 +138,13 @@ const MessageScreen = ({route}: routeParams) => {
 
   const getRealtimeUserInfo = async () => {
     if (isGroupChat) {
+      let tempMembers = membersId.filter(id => id != user.uid);
       let users = [];
-      for (const id of membersId) {
+      for (const id of tempMembers) {
         let user = await getUserData(id);
         users.push(user.data());
       }
+      // console.log('with current user', users);
       setGroupMemberRealtimeInfo(users);
     } else {
       let user = await getUserData(chatId);
@@ -153,7 +168,19 @@ const MessageScreen = ({route}: routeParams) => {
         name={name}
         profilePic={profilePic}
         onPressDetails={gotoDetails}
+        onPressonMore={() => setShowMoreBtn(!showMoreBtn)}
       />
+
+      {/* showMoreBtn */}
+      {showMoreBtn && (
+        <ShowMoreComp
+          btnText="Details"
+          onPrees={() => {
+            setShowMoreBtn(!showMoreBtn);
+            gotoDetails();
+          }}
+        />
+      )}
 
       {/* message section */}
       {loading ? (

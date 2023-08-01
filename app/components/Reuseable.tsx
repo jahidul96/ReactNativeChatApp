@@ -38,11 +38,16 @@ export const PositionButton = ({
 interface shoemoreInterface {
   onPrees: () => void;
   extraStyle?: any;
+  btnText: string;
 }
-export const ShowMoreComp = ({onPrees, extraStyle}: shoemoreInterface) => (
+export const ShowMoreComp = ({
+  onPrees,
+  extraStyle,
+  btnText,
+}: shoemoreInterface) => (
   <View style={[styles.showMoreContainer, extraStyle]}>
     <Pressable style={styles.showMoreBtn} onPress={onPrees}>
-      <RegularText text="Profile" extraStyle={styles.showMoreBtnText} />
+      <RegularText text={btnText} extraStyle={styles.showMoreBtnText} />
     </Pressable>
   </View>
 );
