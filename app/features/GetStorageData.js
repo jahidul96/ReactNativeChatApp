@@ -19,3 +19,11 @@ export const getPhotosFromStorage = () => {
       });
   });
 };
+
+export const getUserPhoto = setGalleryPhotos => {
+  getPhotosFromStorage()
+    .then(imgData => {
+      setGalleryPhotos(imgData);
+    })
+    .catch(err => console.log(err.message));
+};

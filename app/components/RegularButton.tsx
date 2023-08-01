@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: AppColors.WHITE,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     fontSize: 18,
   },
 });

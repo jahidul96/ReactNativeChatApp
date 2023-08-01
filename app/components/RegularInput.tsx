@@ -37,5 +37,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 17,
     color: AppColors.WHITE,
+    fontFamily: 'Poppins-Regular',
   },
 });

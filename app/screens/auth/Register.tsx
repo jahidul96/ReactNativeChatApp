@@ -21,6 +21,8 @@ import {addUserToFb} from '../../firebase/fbFireStore';
 import {uploadFilesToBucket} from '../../firebase/fbStorage';
 import {AppContext} from '../../context/AppContext';
 import {getFcmToken} from '../../features/notificationServices';
+import {getUserPhoto} from '../../features/GetStorageData';
+import {hasAndroidPermission} from '../../features/AppPermisionEtc';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +31,8 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
   const [image, setImage] = useState<string | null>();
-  const {setPushToken} = useContext(AppContext);
+  const {setPushToken, setGalleryPhotos, setStoragePermision} =
+    useContext(AppContext);
   const [token, setToken] = useState('');
 
   const userData = {
@@ -90,6 +93,12 @@ const Register = () => {
   };
 
   useEffect(() => {
+    hasAndroidPermission()
+      .then(val => {
+        setStoragePermision(val);
+        getUserPhoto(setGalleryPhotos);
+      })
+      .catch(err => setStoragePermision(false));
     getFcmToken()
       .then(val => {
         setToken(val);

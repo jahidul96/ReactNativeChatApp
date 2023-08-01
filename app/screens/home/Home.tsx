@@ -20,7 +20,16 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import ChatTab from './ChatTab';
 import GroupTab from './GroupTab';
 import AlertModal from '../../components/AlertModal';
-import {getFcmToken} from '../../features/notificationServices';
+import {
+  getFcmToken,
+  notificationListeners,
+  requestUserPermissionForNotification,
+} from '../../features/notificationServices';
+import {hasAndroidPermission} from '../../features/AppPermisionEtc';
+import {
+  getPhotosFromStorage,
+  getUserPhoto,
+} from '../../features/GetStorageData';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -33,7 +42,8 @@ const Home = () => {
     {key: 'second', title: 'Groups'},
   ]);
   const [showMore, setShowMore] = useState(false);
-  const {setUser} = useContext(AppContext);
+  const {setUser, setStoragePermision, setGalleryPhotos} =
+    useContext(AppContext);
   const [loading, setLoading] = useState(true);
   const chats = getRealtimeChats();
   const groupChats = getGroupsChats();
@@ -59,7 +69,7 @@ const Home = () => {
       }}
       labelStyle={{
         color: AppColors.GREY,
-        fontWeight: '700',
+        fontFamily: 'Poppins-Bold',
       }}
       activeColor={AppColors.WHITE}
       inactiveColor={AppColors.GREY}
@@ -117,11 +127,23 @@ const Home = () => {
 
   // get data on first render
   useEffect(() => {
+    // permission
+    hasAndroidPermission()
+      .then(val => {
+        setStoragePermision(val);
+        getUserPhoto(setGalleryPhotos);
+      })
+      .catch(err => setStoragePermision(false));
+
+    // notification permission
+    requestUserPermissionForNotification();
+    notificationListeners();
     // get userData
     getUserData(auth().currentUser?.uid)
       .then(user => {
         // get user Data
         setUser(user.data());
+
         // update userToken
         getFcmToken().then(token => {
           updateUserData({pushToken: token}, auth().currentUser?.uid);

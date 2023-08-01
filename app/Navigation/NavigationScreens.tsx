@@ -15,6 +15,8 @@ import CreateGroup from '../screens/chat/CreateGroup';
 import ChatDetails from '../screens/chat/ChatDetails';
 import AddNewGroupMember from '../screens/chat/AddNewGroupMember';
 import RemoveGroupMember from '../screens/chat/RemoveGroupMember';
+import OnboardingScreen from '../screens/OnboardingScreen';
+import {getOnboardStatus} from '../features/AsyncStorageFeatures';
 
 const Stack = createNativeStackNavigator();
 const NavigationScreens = () => {
@@ -22,8 +24,15 @@ const NavigationScreens = () => {
   const [initialRoute, setInitialRoute] = useState('');
 
   function onAuthStateChanged(user: any) {
-    setInitialRoute(user ? 'Home' : 'Register');
-    if (initializing) setInitializing(false);
+    getOnboardStatus().then(val => {
+      if (val == 'true') {
+        setInitialRoute(user ? 'Home' : 'Register');
+        if (initializing) setInitializing(false);
+      } else {
+        setInitialRoute('Onboarding');
+        if (initializing) setInitializing(false);
+      }
+    });
   }
 
   useEffect(() => {
@@ -38,6 +47,8 @@ const NavigationScreens = () => {
       <Stack.Navigator
         screenOptions={{headerShown: false, animation: 'slide_from_right'}}
         initialRouteName={initialRoute}>
+        {/* onboarding screen */}
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         {/* auth screens */}
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={Login} />

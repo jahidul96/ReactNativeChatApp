@@ -17,6 +17,7 @@ import {goToChatFromContact} from '../../features/ContactScreenFuncs';
 import {AntDesign} from '../../utils/IconExport';
 import AnimatedAddMember from '../../components/AnimatedAddMember';
 import {Alert} from 'react-native';
+import {displayNotifeeMessage} from '../../features/notificationServices';
 
 interface addnewGroupInterface {
   route: {
@@ -39,9 +40,8 @@ const AddNewGroupMember = ({route}: addnewGroupInterface) => {
 
   const onPressAddnewContact = (contact: userInterface) => {
     if (memberDetails.some(val => val.uid == contact.uid)) {
-      return;
+      return Alert.alert('Already added');
     } else {
-      console.log('add call');
       goToChatFromContact(
         contact,
         false,
@@ -64,6 +64,7 @@ const AddNewGroupMember = ({route}: addnewGroupInterface) => {
     };
     updateGroupInfo(groupId, updatedData);
     navigation.navigate('Home');
+    displayNotifeeMessage('Chatapp', 'Added new member to the group');
   };
   useEffect(() => {
     getAllContacts()

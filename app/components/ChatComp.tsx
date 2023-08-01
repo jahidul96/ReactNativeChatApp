@@ -61,11 +61,11 @@ const ChatComp = ({
 
       <View style={styles.rightContainer}>
         <View style={styles.nameAndDateStyle}>
-          <RegularText text={username} />
+          <RegularText text={username} extraStyle={{fontSize: 16}} />
           {isChat && (
             <RegularText
               text={moment(msgTime).fromNow().toString()}
-              extraStyle={{fontSize: 12}}
+              extraStyle={{fontSize: 11}}
             />
           )}
           {isAdmin && (
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
 
   lastMsgStyle: {
     color: AppColors.GREY,
-    marginTop: -3,
-    fontSize: 14,
+
+    fontSize: 13,
   },
 
   photoIconWrapper: {

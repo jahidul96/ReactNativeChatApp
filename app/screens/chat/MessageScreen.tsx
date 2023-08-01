@@ -30,6 +30,11 @@ import {PhotoPlacehoderComp} from './ChatReusableComp';
 import GalleryModal from './GalleryModal';
 import {uploadFilesToBucket} from '../../firebase/fbStorage';
 import getGroupMessages from '../../firebase/GetGroupMessages';
+import {hasAndroidPermission} from '../../features/AppPermisionEtc';
+import {
+  getPhotosFromStorage,
+  getUserPhoto,
+} from '../../features/GetStorageData';
 
 interface routeParams {
   route: {
@@ -40,7 +45,8 @@ const MessageScreen = ({route}: routeParams) => {
   const navigation = useNavigation<any>();
   const [text, setText] = useState('');
   const [showFileModal, setShowFileModal] = useState(false);
-  const {user} = useContext(AppContext);
+  const {user, storagePermission, setStoragePermision, setGalleryPhotos} =
+    useContext(AppContext);
   const {
     isGroupChat,
     profilePic,
@@ -66,6 +72,7 @@ const MessageScreen = ({route}: routeParams) => {
   const [showMoreBtn, setShowMoreBtn] = useState(false);
 
   // console.log('membersIds', membersId);
+  // console.log('stroage permission', storagePermission);
 
   const sendMessage = async (val: string) => {
     sendOneToOneMessage(
@@ -153,6 +160,14 @@ const MessageScreen = ({route}: routeParams) => {
   };
 
   useEffect(() => {
+    if (!storagePermission) {
+      hasAndroidPermission()
+        .then(val => {
+          setStoragePermision(val);
+          getUserPhoto(setGalleryPhotos);
+        })
+        .catch(err => setStoragePermision(false));
+    }
     getRealtimeUserInfo();
     setTimeout(() => {
       setLoading(false);

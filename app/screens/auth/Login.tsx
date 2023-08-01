@@ -44,11 +44,6 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity
-        style={styles.backIconWrapper}
-        onPress={() => navigation.navigate('Register')}>
-        <Ionicons name="arrow-back" color={AppColors.BLACK} size={25} />
-      </TouchableOpacity> */}
       <StatusBar
         backgroundColor={AppColors.GREY_BLACK}
         barStyle={'light-content'}
@@ -103,7 +98,7 @@ const styles = StyleSheet.create({
   logoTextStyle: {
     fontSize: 25,
     marginBottom: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     textAlign: 'center',
   },
 });

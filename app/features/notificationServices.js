@@ -1,6 +1,9 @@
 import {PermissionsAndroid} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
+import notifee, {
+  AndroidImportance,
+  AndroidVisibility,
+} from '@notifee/react-native';
 
 export const askNotificationPermision = () => {
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
@@ -14,6 +17,7 @@ export const requestUserPermissionForNotification = async () => {
 
   if (enabled) {
     // console.log('Authorization status:', authStatus);
+    askNotificationPermision();
   }
 };
 
@@ -32,61 +36,71 @@ export const getRefreshToken = async () => {
 };
 
 export const notificationListeners = async () => {
-  const channelId = await notifee.createChannel({
-    id: 'default',
-    name: 'Default Channel',
-  });
-
   messaging().onNotificationOpenedApp(remoteMessage => {
-    console.log(
-      'Notification caused app to open from background state:',
-      remoteMessage.notification,
+    displayRemoteNotifeeMessage(
+      remoteMessage.data.title,
+      remoteMessage.data.body,
+      remoteMessage.data.image,
     );
   });
 
   // Check whether an initial notification is available
   messaging().getInitialNotification(async remoteMessage => {
     console.log('this app now on kill state', remoteMessage);
+
+    displayRemoteNotifeeMessage(
+      remoteMessage.data.title,
+      remoteMessage.data.body,
+      remoteMessage.data.image,
+    );
   });
 
   messaging().onMessage(async remoteMessage => {
     console.log('firegroundhandler message', remoteMessage.data);
 
     // Display a notification
-    await notifee.displayNotification({
-      title: remoteMessage.data.title,
-      body: remoteMessage.data.body,
-      android: {
-        channelId,
-        pressAction: {
-          id: 'default',
-        },
-        largeIcon: remoteMessage.data.image,
-      },
-    });
+
+    displayRemoteNotifeeMessage(
+      remoteMessage.data.title,
+      remoteMessage.data.body,
+      remoteMessage.data.image,
+    );
   });
 
   messaging().setBackgroundMessageHandler(async remoteMessage => {
     // console.log('background message handler', remoteMessage.notification);
-
-    await notifee.displayNotification({
-      title: remoteMessage.data.title,
-      body: remoteMessage.data.body,
-      android: {
-        channelId,
-        pressAction: {
-          id: 'default',
-        },
-        largeIcon: remoteMessage.data.image,
-      },
-    });
+    displayRemoteNotifeeMessage(
+      remoteMessage.data.title,
+      remoteMessage.data.body,
+      remoteMessage.data.image,
+    );
   });
 };
 
-const displayNotifeeMessage = async (title, body) => {
+const displayRemoteNotifeeMessage = async (title, body, imgUrl) => {
   const channelId = await notifee.createChannel({
     id: 'default',
-    name: 'Default Channel',
+    name: 'custom_channel',
+  });
+
+  await notifee.displayNotification({
+    title: title,
+    body: body,
+    android: {
+      channelId,
+      importance: AndroidImportance.HIGH,
+      pressAction: {
+        id: 'default',
+      },
+      largeIcon: imgUrl,
+      circularLargeIcon: true,
+    },
+  });
+};
+export const displayNotifeeMessage = async (title, body) => {
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'custom_channel',
   });
 
   // Display a notification
@@ -95,6 +109,7 @@ const displayNotifeeMessage = async (title, body) => {
     body: body,
     android: {
       channelId,
+      importance: AndroidImportance.HIGH,
       pressAction: {
         id: 'default',
       },

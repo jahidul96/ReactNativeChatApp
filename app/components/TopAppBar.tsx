@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
   },
   profileWrapper: {
     flexDirection: 'row',
@@ -119,9 +119,10 @@ const styles = StyleSheet.create({
   },
 
   nameStyle: {
-    fontSize: 16,
+    fontSize: 15,
   },
   onlineStyle: {
-    fontSize: 13,
+    fontSize: 12,
+    marginTop: -3,
   },
 });

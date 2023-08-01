@@ -16,5 +16,6 @@ const styles = StyleSheet.create({
   text: {
     color: AppColors.WHITE,
     fontSize: 16,
+    fontFamily: 'Poppins-Regular',
   },
 });

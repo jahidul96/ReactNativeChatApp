@@ -27,6 +27,7 @@ import {
   deleteMessageChat,
   updateGroupInfo,
 } from '../../firebase/fbFireStore';
+import {displayNotifeeMessage} from '../../features/notificationServices';
 
 interface chatDetailsInterface {
   route: {
@@ -62,6 +63,7 @@ const ChatDetails = ({route}: chatDetailsInterface) => {
     } else {
       deleteGroupFromFb(chatId);
       navigation.navigate('Home');
+      displayNotifeeMessage('Chatapp', 'Chat Deleted');
     }
   };
 
@@ -77,6 +79,7 @@ const ChatDetails = ({route}: chatDetailsInterface) => {
     };
     updateGroupInfo(chatId, updatedData);
     navigation.navigate('Home');
+    displayNotifeeMessage('Chatapp', `Leaved ${groupName} group`);
   };
   return (
     <View style={styles.container}>
@@ -218,7 +221,7 @@ const ChatDetails = ({route}: chatDetailsInterface) => {
         )}
 
         {/* delete group  */}
-        {isGroupChat && user.uid == adminDetails.uid && (
+        {isGroupChat && user.uid == adminDetails.uid && chatId != '' && (
           <TextBtn
             onPress={() => setGroupDelete(!groupDelete)}
             text="Delete Group"

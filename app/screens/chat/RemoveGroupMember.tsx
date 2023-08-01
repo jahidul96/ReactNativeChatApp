@@ -12,6 +12,7 @@ import ChatComp from '../../components/ChatComp';
 import {AntDesign} from '../../utils/IconExport';
 import {updateGroupInfo} from '../../firebase/fbFireStore';
 import {useNavigation} from '@react-navigation/native';
+import {displayNotifeeMessage} from '../../features/notificationServices';
 
 interface removeInterFace {
   route: {
@@ -56,6 +57,7 @@ const RemoveGroupMember = ({route}: removeInterFace) => {
     };
     updateGroupInfo(groupId, updatedData);
     navigation.navigate('Home');
+    displayNotifeeMessage('Chatapp', 'Removed member from group');
   };
   return (
     <View style={styles.container}>

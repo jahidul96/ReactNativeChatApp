@@ -1,11 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const getData = async () => {
+export const getOnboardStatus = async () => {
   try {
-    const value = await AsyncStorage.getItem('my-key');
-    if (value !== null) {
-      // value previously stored
-    }
+    const value = await AsyncStorage.getItem('firstrun');
+    return value;
   } catch (e) {
     // error reading value
   }
