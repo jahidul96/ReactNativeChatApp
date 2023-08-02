@@ -10,11 +10,7 @@
 
 # Video preview in speed mood
 
-
-<video width="400" height="500" autoplay loop muted>
-  <source src="./assets/videos/preview.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<a href="https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/view?usp=sharing">Preview Video</a>
 
 
 
