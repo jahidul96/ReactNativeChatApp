@@ -8,9 +8,15 @@
   firebase ask for hope you know that staff.
 - Configured for Android only
 
+# Video preview in speed mood
+
+<video controls width="320" height="500" autoplay loop>
+  <source src="https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/view?usp=drive_link" type="video/mp4"> 
+</video>
+
 # App Features
 
-- push notification using firebase with message and sender avator!
+- Push notification using firebase with message and sender avator!
 - For simplicity used email/password auth!.
 - one to one chat
 - Realtime with firebase realtime snapshot update
@@ -32,6 +38,7 @@
 - Animated text input container
 - Animated deleting component
 - Used animated file picker and more component
+- Custom fonts
 
 #What more wanted to do!!
 

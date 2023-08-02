@@ -96,7 +96,7 @@ const Footer = ({
           <Ionicons name="send-sharp" size={20} color={AppColors.WHITE} />
         </Pressable>
       ) : (
-        <Pressable style={styles.rightContainer}>
+        <Pressable style={styles.rightContainer} onPrees={()=> Alert.alert("Not implimented!")}>
           <MaterialIcons
             name="keyboard-voice"
             size={22}
