@@ -10,9 +10,7 @@
 
 # Video preview in speed mood
 
-<video controls width="320" height="500" autoplay loop>
-  <source src="https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/view?usp=sharing" type="video/mp4"> 
-</video>
+<iframe src="https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/preview" width="640" height="480" allow="autoplay" loop></iframe>
 
 # App Features
 
