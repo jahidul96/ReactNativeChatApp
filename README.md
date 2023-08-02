@@ -10,10 +10,10 @@
 
 # Video preview in speed mood
 
-<video width="400" height="500" autoplay loop muted>
-  <source src="https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/preview" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+
+![Video Preview](https://drive.google.com/file/d/1XPpRNjC8FhONhytsO5KsXmMViB56QrF6/preview)
+
+
 
 
 
