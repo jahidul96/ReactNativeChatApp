@@ -162,7 +162,7 @@ const SendPushNotificationToTheUser = (
   profilePic: string,
 ) => {
   let serverKey =
-    'AAAAT1Vod54:APA91bFlfCnwUj5vy-aworW_CTdHVTO-dI5gKTo-w1LCVwuRTvrApOnOpsZLyGY1Z-ti2JL1ygH8LEiMka95T0MMjbUolrk8yUdvZIK-7Tok-lj9TeAAoY62NmdAkR2Y2ljgNi3h2q5z';
+    '';
   let payload = JSON.stringify({
     to: userToken,
     data: {
